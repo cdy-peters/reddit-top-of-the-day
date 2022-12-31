@@ -2,6 +2,7 @@ import praw
 import os
 from dotenv import load_dotenv
 from thread import get_thread
+from tts import get_speech
 
 load_dotenv()
 
@@ -15,4 +16,7 @@ subreddit = reddit.subreddit('AmItheAsshole')
 
 # Get the thread
 thread = get_thread(subreddit)
-print(thread)
+
+# Get the speech
+os.mkdir(thread['id'])
+get_speech(thread['title'], f'{thread["id"]}/title.mp3')
