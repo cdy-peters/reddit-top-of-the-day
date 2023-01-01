@@ -1,10 +1,23 @@
-import praw
+"""Main"""
+
 import os
+import praw
 from dotenv import load_dotenv
+
 from thread import get_thread
-from tts import get_speech
+from tts import get_audio
 
 load_dotenv()
+
+
+def init():
+    """Initializes the program"""
+
+    if not os.path.exists('assets'):
+        os.mkdir('assets')
+
+
+init()
 
 # Create the Reddit instance
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
@@ -17,6 +30,5 @@ subreddit = reddit.subreddit('AmItheAsshole')
 # Get the thread
 thread = get_thread(subreddit)
 
-# Get the speech
-os.mkdir(thread['id'])
-get_speech(thread['title'], f'{thread["id"]}/title.mp3')
+# Get audio clips
+get_audio(thread)
