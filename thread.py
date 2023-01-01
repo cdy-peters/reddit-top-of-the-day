@@ -5,7 +5,7 @@ from praw.models import MoreComments
 
 def check_threads(threads: list):
     """Check the threads for the highest score"""
-    
+
     for thread in threads:
         # TODO: Check if the thread has been done
         # TODO: Check if the thread is NSFW
@@ -34,7 +34,7 @@ def get_comments(thread):
 def get_thread(subreddit):
     """Get a thread from the subreddit"""
 
-    threads = subreddit.top(time_filter='day', limit=1)
+    threads = subreddit.top(time_filter="day", limit=1)
     thread = check_threads(threads)
 
     content = {}
@@ -42,6 +42,6 @@ def get_thread(subreddit):
     content["url"] = f"https://www.reddit.com{thread.permalink}"
     content["title"] = thread.title
     content["body"] = thread.selftext
-    content['comments'] = get_comments(thread)
+    content["comments"] = get_comments(thread)
 
     return content
