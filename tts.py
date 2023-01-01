@@ -9,12 +9,33 @@ from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioc
 def check_text(text):
     """Checks and cleans the text"""
 
-    # TODO: Clean text, removing links, special characters, extending abbreviations
+    # Remove links
+    regex_urls = r"((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*"
+    text = re.sub(regex_urls, " ", text)
 
-    if len(text) > 1000:
+    # Remove special characters
+    regex_expr = r"\s['|’]|['|’]\s|[\^_~@!;#:\-–—%“”‘\"%\*\/{}\[\]\(\)\\|<>=+]"
+    text = re.sub(regex_expr, " ", text)
+
+    # Replace symbols with words
+    text = text.replace("+", "plus").replace("&", "and")
+
+    # Trim whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    # Expand acronyms
+    text = re.sub(r"\bnta\b", "Not The Asshole", text, flags=re.IGNORECASE)
+    text = re.sub(r"\byta\b", "You're The Asshole", text, flags=re.IGNORECASE)
+    text = re.sub(r"\baita\b", "Am I The Asshole", text, flags=re.IGNORECASE)
+    text = re.sub(r"\beta\b", "Everyone's The Asshole", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bnah\b", "No Assholes Here", text, flags=re.IGNORECASE)
+    text = re.sub(r"\btifu\b", "Today I Fucked Up", text, flags=re.IGNORECASE)
+
+    if len(text) > 550:
         split_text = [
             i.group().strip() for i in re.finditer(r" *(((.|\n){0,550})(\.|.$))", text)
         ]
+        print(split_text)
         return split_text
 
     return [text]
