@@ -3,9 +3,12 @@
 import os
 import random
 from moviepy.editor import VideoFileClip
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+
+# TODO: Be able to download backgrounds
 
 
-def get_subclip(id, length):
+def get_subclip(thread_id, length):
     """Gets a background for the video"""
 
     backgrounds = os.listdir("assets/backgrounds")
@@ -13,6 +16,9 @@ def get_subclip(id, length):
 
     start = random.randint(0, int(background.duration - length))
 
-    background.subclip(start, start + length).write_videofile(
-        f"assets/threads/{id}/background.mp4"
+    ffmpeg_extract_subclip(
+        f"assets/backgrounds/{random.choice(backgrounds)}",
+        start,
+        start + length,
+        targetname=f"assets/threads/{thread_id}/background.mp4",
     )
