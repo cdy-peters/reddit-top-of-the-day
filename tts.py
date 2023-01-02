@@ -35,7 +35,6 @@ def check_text(text):
         split_text = [
             i.group().strip() for i in re.finditer(r" *(((.|\n){0,550})(\.|.$))", text)
         ]
-        print(split_text)
         return split_text
 
     return [text]
@@ -81,8 +80,7 @@ def tts_handler(text, path):
     else:
         with open(path, "wb") as f:
             f.write(requests.get(audio[0], timeout=10).content)
-
-    # TODO: Stop when total audio length is of a certain length
+    return AudioFileClip(path).duration
 
 
 def get_audio(thread):
@@ -90,7 +88,12 @@ def get_audio(thread):
 
     os.mkdir(f'assets/{thread["id"]}')
 
-    tts_handler(thread["title"], f'assets/{thread["id"]}/title.mp3')
-    tts_handler(thread["body"], f'assets/{thread["id"]}/body.mp3')
+    length = 0
+
+    length += tts_handler(thread["title"], f'assets/{thread["id"]}/title.mp3')
+    length += tts_handler(thread["body"], f'assets/{thread["id"]}/body.mp3')
     for comment in thread["comments"]:
-        tts_handler(comment["body"], f'assets/{thread["id"]}/{comment["id"]}.mp3')
+        # Max length of video
+        if length > 180:
+            break
+        length += tts_handler(comment["body"], f'assets/{thread["id"]}/{comment["id"]}.mp3')
