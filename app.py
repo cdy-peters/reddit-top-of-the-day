@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from thread import get_thread
 from tts import get_audio
+from background import get_subclip
 
 load_dotenv()
 
@@ -15,8 +16,14 @@ def init():
 
     if not os.path.exists("assets"):
         os.mkdir("assets")
+
+    if not os.path.exists("assets/threads"):
+        os.mkdir("assets/threads")
     if not os.path.exists("assets/temp"):
         os.mkdir("assets/temp")
+
+    if not os.path.exists("assets/backgrounds"):
+        os.mkdir("assets/backgrounds")
 
 
 init()
@@ -35,4 +42,7 @@ subreddit = reddit.subreddit("AmItheAsshole")
 thread = get_thread(subreddit)
 
 # Get audio clips
-get_audio(thread)
+length = get_audio(thread)
+
+# Get background
+get_subclip(thread["id"], length)
