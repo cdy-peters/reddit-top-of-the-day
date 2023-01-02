@@ -1,7 +1,7 @@
 """Gets screenshots of thread comments"""
 
 import os
-# from playwright.async_api import async_playwright
+import json
 from playwright.sync_api import sync_playwright, ViewportSize
 
 
@@ -14,7 +14,9 @@ def get_screenshots(thread):
         browser = p.chromium.launch()
         context = browser.new_context()
 
-        # TODO: Dark mode
+        cookie = open("./cookie-dark-mode.json", encoding="utf-8")
+        cookie = json.load(cookie)
+        context.add_cookies(cookie)
 
         page = context.new_page()
         page.goto(thread["url"], timeout=0)

@@ -103,7 +103,6 @@ def get_audio(thread):
         # Max length of video
         if length > 120:
             thread["comments"] = thread["comments"][: thread["comments"].index(comment)]
-            print(len(thread["comments"]))
             break
         length += tts_handler(thread["id"], f'{comment["id"]}.mp3', comment["body"])
 
