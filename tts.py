@@ -44,7 +44,7 @@ def check_text(text):
 def tts_handler(thread_id, filename, text):
     """Handles the text to speech"""
 
-    dir_path = f"assets/threads/{thread_id}"
+    dir_path = f"assets/threads/{thread_id}/audio"
     file_path = f"{dir_path}/{filename}"
 
     text = check_text(text)
@@ -93,7 +93,7 @@ def tts_handler(thread_id, filename, text):
 def get_audio(thread):
     """Gets the audio of the thread"""
 
-    os.mkdir(f'assets/threads/{thread["id"]}')
+    os.mkdir(f'assets/threads/{thread["id"]}/audio')
 
     length = 0
 
@@ -101,7 +101,9 @@ def get_audio(thread):
     length += tts_handler(thread["id"], "body.mp3", thread["body"])
     for comment in thread["comments"]:
         # Max length of video
-        if length > 180:
+        if length > 120:
+            thread["comments"] = thread["comments"][: thread["comments"].index(comment)]
+            print(len(thread["comments"]))
             break
         length += tts_handler(thread["id"], f'{comment["id"]}.mp3', comment["body"])
 

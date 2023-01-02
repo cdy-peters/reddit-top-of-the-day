@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from thread import get_thread
 from tts import get_audio
+from screenshots import get_screenshots
 from background import get_subclip
 
 load_dotenv()
@@ -41,6 +42,9 @@ thread = get_thread(subreddit)
 
 # Get audio clips
 length = get_audio(thread)
+
+# Get screenshots
+get_screenshots(thread)
 
 # Get background
 get_subclip(thread["id"], length)

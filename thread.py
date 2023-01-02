@@ -1,5 +1,6 @@
 """Gets a thread and it's contents from a subreddit"""
 
+import os
 from praw.models import MoreComments
 
 
@@ -24,7 +25,7 @@ def get_comments(thread):
             comments.append(
                 {
                     "id": comment.id,
-                    "url": comment.permalink,
+                    "url": f"https://www.reddit.com{comment.permalink}",
                     "body": comment.body,
                 }
             )
@@ -43,5 +44,7 @@ def get_thread(subreddit):
     content["title"] = thread.title
     content["body"] = thread.selftext
     content["comments"] = get_comments(thread)
+
+    os.mkdir(f"assets/threads/{content['id']}")
 
     return content
