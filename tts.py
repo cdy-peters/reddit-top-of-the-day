@@ -2,6 +2,7 @@
 
 import os
 import re
+import shutil
 import requests
 from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
 
@@ -40,10 +41,11 @@ def check_text(text):
     return [text]
 
 
-def tts_handler(text, path):
+def tts_handler(thread_id, filename, text):
     """Handles the text to speech"""
 
-    path = f"assets/threads/{path}"
+    dir_path = f"assets/threads/{thread_id}"
+    file_path = f"{dir_path}/{filename}"
 
     text = check_text(text)
     audio = []
@@ -65,24 +67,27 @@ def tts_handler(text, path):
         audio.append(response.json()["speak_url"])
 
     if len(audio) > 1:
+        path = f"{dir_path}/temp"
+
+        os.mkdir(path)
+
         for i, url in enumerate(audio):
-            with open(f"assets/temp/{i}.mp3", "wb") as f:
+            with open(f"{path}/{i}.mp3", "wb") as f:
                 f.write(requests.get(url, timeout=10).content)
 
         audio_clips = []
         for i in range(len(audio)):
-            audio_clips.append(AudioFileClip(f"assets/temp/{i}.mp3"))
+            audio_clips.append(AudioFileClip(f"{path}/{i}.mp3"))
 
         CompositeAudioClip([concatenate_audioclips(audio_clips)]).write_audiofile(
-            path, fps=44100
+            file_path, fps=44100
         )
 
-        for i in range(len(audio)):
-            os.remove(f"assets/temp/{i}.mp3")
+        shutil.rmtree(path)
     else:
-        with open(path, "wb") as f:
+        with open(file_path, "wb") as f:
             f.write(requests.get(audio[0], timeout=10).content)
-    return AudioFileClip(path).duration
+    return AudioFileClip(file_path).duration
 
 
 def get_audio(thread):
@@ -92,12 +97,12 @@ def get_audio(thread):
 
     length = 0
 
-    length += tts_handler(thread["title"], f'{thread["id"]}/title.mp3')
-    length += tts_handler(thread["body"], f'{thread["id"]}/body.mp3')
+    length += tts_handler(thread["id"], "title.mp3", thread["title"])
+    length += tts_handler(thread["id"], "body.mp3", thread["body"])
     for comment in thread["comments"]:
         # Max length of video
         if length > 180:
             break
-        length += tts_handler(comment["body"], f'{thread["id"]}/{comment["id"]}.mp3')
+        length += tts_handler(thread["id"], f'{comment["id"]}.mp3', comment["body"])
 
     return length

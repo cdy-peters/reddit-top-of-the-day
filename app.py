@@ -19,8 +19,6 @@ def init():
 
     if not os.path.exists("assets/threads"):
         os.mkdir("assets/threads")
-    if not os.path.exists("assets/temp"):
-        os.mkdir("assets/temp")
 
     if not os.path.exists("assets/backgrounds"):
         os.mkdir("assets/backgrounds")
