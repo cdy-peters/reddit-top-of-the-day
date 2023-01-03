@@ -57,16 +57,17 @@ def get_thread(subreddit):
 
     threads = subreddit.top(time_filter="day", limit=25)
     thread = check_threads(threads)
-    
+
     # TODO: Handle if thread is None
 
     content = {}
+    content["subreddit"] = thread.subreddit
     content["id"] = thread.id
     content["url"] = f"https://www.reddit.com{thread.permalink}"
     content["title"] = thread.title
     content["body"] = thread.selftext
     content["comments"] = get_comments(thread)
 
-    os.mkdir(f"assets/threads/{content['id']}")
+    os.mkdir(f"assets/subreddits/{content['subreddit']}/{content['id']}")
 
     return content

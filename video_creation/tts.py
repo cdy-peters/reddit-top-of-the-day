@@ -41,10 +41,10 @@ def check_text(text):
     return [text]
 
 
-def tts_handler(thread_id, filename, text):
+def tts_handler(subreddit, thread_id, filename, text):
     """Handles the text to speech"""
 
-    dir_path = f"assets/threads/{thread_id}/audio"
+    dir_path = f"assets/subreddits/{subreddit}/{thread_id}/audio"
     file_path = f"{dir_path}/{filename}"
 
     text = check_text(text)
@@ -93,12 +93,14 @@ def tts_handler(thread_id, filename, text):
 def get_audio(thread):
     """Gets the audio of the thread"""
 
-    os.mkdir(f'assets/threads/{thread["id"]}/audio')
+    os.mkdir(f'assets/subreddits/{thread["subreddit"]}/{thread["id"]}/audio')
 
     length = 0
 
-    length += tts_handler(thread["id"], "title.mp3", thread["title"])
-    length += tts_handler(thread["id"], "body.mp3", thread["body"])
+    length += tts_handler(
+        thread["subreddit"], thread["id"], "title.mp3", thread["title"]
+    )
+    length += tts_handler(thread["subreddit"], thread["id"], "body.mp3", thread["body"])
 
     if length >= 45:
         thread["comments"] = []
@@ -110,7 +112,9 @@ def get_audio(thread):
         if length >= 90:
             thread["comments"] = comments
             break
-        length += tts_handler(thread["id"], f'{comment["id"]}.mp3', comment["body"])
+        length += tts_handler(
+            thread["subreddit"], thread["id"], f'{comment["id"]}.mp3', comment["body"]
+        )
         comments.append(comment)
 
     return length

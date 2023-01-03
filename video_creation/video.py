@@ -13,19 +13,17 @@ from moviepy.video.compositing.concatenate import concatenate_videoclips
 def get_video(thread):
     """Creates the video"""
 
+    path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}"
+
     # Get background clip
-    background = VideoFileClip(
-        f"assets/threads/{thread['id']}/background.mp4"
-    ).without_audio()
+    background = VideoFileClip(f"{path}/background.mp4").without_audio()
 
     # Get audio clips
     audio = []
-    audio.append(AudioFileClip(f"assets/threads/{thread['id']}/audio/title.mp3"))
-    audio.append(AudioFileClip(f"assets/threads/{thread['id']}/audio/body.mp3"))
+    audio.append(AudioFileClip(f"{path}/audio/title.mp3"))
+    audio.append(AudioFileClip(f"{path}/audio/body.mp3"))
     for comment in thread["comments"]:
-        audio.append(
-            AudioFileClip(f"assets/threads/{thread['id']}/audio/{comment['id']}.mp3")
-        )
+        audio.append(AudioFileClip(f"{path}/audio/{comment['id']}.mp3"))
 
     # Concat audio clips
     audio_concat = concatenate_audioclips(audio)
@@ -34,7 +32,7 @@ def get_video(thread):
     # Get screenshots
     screenshots = []
     screenshots.append(
-        ImageClip(f"assets/threads/{thread['id']}/screenshots/title.png")
+        ImageClip(f"{path}/screenshots/title.png")
         .set_duration(audio[0].duration)
         .resize(width=980)
         .set_opacity(0.9)
@@ -42,7 +40,7 @@ def get_video(thread):
         .crossfadeout(0.2)
     )
     screenshots.append(
-        ImageClip(f"assets/threads/{thread['id']}/screenshots/body.png")
+        ImageClip(f"{path}/screenshots/body.png")
         .set_duration(audio[1].duration)
         .resize(width=980)
         .set_opacity(0.9)
@@ -51,7 +49,7 @@ def get_video(thread):
     )
     for i, comment in enumerate(thread["comments"]):
         screenshots.append(
-            ImageClip(f"assets/threads/{thread['id']}/screenshots/{comment['id']}.png")
+            ImageClip(f"{path}/screenshots/{comment['id']}.png")
             .set_duration(audio[i + 2].duration)
             .resize(width=980)
             .set_opacity(0.9)
@@ -67,7 +65,7 @@ def get_video(thread):
 
     # Save video
     video.write_videofile(
-        f"assets/threads/{thread['id']}/video.mp4",
+        f"{path}/video.mp4",
         fps=30,
         audio_codec="aac",
         audio_bitrate="192k",

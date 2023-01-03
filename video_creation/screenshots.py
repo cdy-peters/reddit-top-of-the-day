@@ -8,7 +8,8 @@ from playwright.sync_api import sync_playwright, ViewportSize
 def get_screenshots(thread):
     """Gets screenshots of the thread"""
 
-    os.mkdir(f"assets/threads/{thread['id']}/screenshots")
+    path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}/screenshots"
+    os.mkdir(path)
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -31,10 +32,10 @@ def get_screenshots(thread):
                 page.locator('[data-click-id="text"] button').click()
 
         page.locator('[data-adclicklocation="title"]').screenshot(
-            path=f"assets/threads/{thread['id']}/screenshots/title.png"
+            path=f"{path}/title.png"
         )
         page.locator('[data-adclicklocation="media"]').screenshot(
-            path=f"assets/threads/{thread['id']}/screenshots/body.png"
+            path=f"{path}/body.png"
         )
 
         for i, comment in enumerate(thread["comments"]):
@@ -44,5 +45,5 @@ def get_screenshots(thread):
                 page.locator('[data-testid="content-gate"] button').click()
 
             page.locator(f'#t1_{comment["id"]}').screenshot(
-                path=f"assets/threads/{thread['id']}/screenshots/{comment['id']}.png"
+                path=f"{path}/{comment['id']}.png"
             )

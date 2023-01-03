@@ -19,14 +19,31 @@ def init():
     if not os.path.exists("assets"):
         os.mkdir("assets")
 
-    if not os.path.exists("assets/threads"):
-        os.mkdir("assets/threads")
+    if not os.path.exists("assets/subreddits"):
+        os.mkdir("assets/subreddits")
 
     if not os.path.exists("assets/backgrounds"):
         os.mkdir("assets/backgrounds")
 
 
-init()
+def main():
+    """Main function"""
+
+    # Get the thread
+    thread = get_thread(subreddit)
+
+    # Get audio clips
+    length = get_audio(thread)
+
+    # Get screenshots
+    get_screenshots(thread)
+
+    # Get background
+    get_subclip(thread["subreddit"], thread["id"], length)
+
+    # Get video
+    get_video(thread)
+
 
 # Create the Reddit instance
 reddit = praw.Reddit(
@@ -34,21 +51,13 @@ reddit = praw.Reddit(
     client_secret=os.getenv("CLIENT_SECRET"),
     user_agent=os.getenv("USER_AGENT"),
 )
+subreddits = ["AmItheAsshole", "offmychest"]
 
-# Get the subreddit
-subreddit = reddit.subreddit("AmItheAsshole")
+init()
 
-# Get the thread
-thread = get_thread(subreddit)
+for subreddit in subreddits:
+    if not os.path.exists(f"assets/subreddits/{subreddit}"):
+        os.mkdir(f"assets/subreddits/{subreddit}")
 
-# Get audio clips
-length = get_audio(thread)
-
-# Get screenshots
-get_screenshots(thread)
-
-# Get background
-get_subclip(thread["id"], length)
-
-# Get video
-get_video(thread)
+    subreddit = reddit.subreddit(subreddit)
+    main()

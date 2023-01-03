@@ -8,7 +8,7 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 # TODO: Be able to download backgrounds
 
 
-def get_subclip(thread_id, length):
+def get_subclip(subreddit, thread_id, length):
     """Gets a background for the video"""
 
     backgrounds = os.listdir("assets/backgrounds")
@@ -20,5 +20,5 @@ def get_subclip(thread_id, length):
         f"assets/backgrounds/{random.choice(backgrounds)}",
         start,
         start + length,
-        targetname=f"assets/threads/{thread_id}/background.mp4",
+        targetname=f"assets/subreddits/{subreddit}/{thread_id}/background.mp4",
     )
