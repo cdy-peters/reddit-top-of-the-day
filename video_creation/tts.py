@@ -25,12 +25,12 @@ def check_text(text):
     text = re.sub(r"\s+", " ", text)
 
     # Expand acronyms
-    text = re.sub(r"\bnta\b", "Not The Asshole", text, flags=re.IGNORECASE)
-    text = re.sub(r"\byta\b", "You're The Asshole", text, flags=re.IGNORECASE)
-    text = re.sub(r"\baita\b", "Am I The Asshole", text, flags=re.IGNORECASE)
-    text = re.sub(r"\beta\b", "Everyone's The Asshole", text, flags=re.IGNORECASE)
-    text = re.sub(r"\bnah\b", "No Assholes Here", text, flags=re.IGNORECASE)
-    text = re.sub(r"\btifu\b", "Today I Fucked Up", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bNTA\b", "Not The Asshole", text)
+    text = re.sub(r"\bYTA\b", "You're The Asshole", text)
+    text = re.sub(r"\bAITA\b", "Am I The Asshole", text)
+    text = re.sub(r"\bETA\b", "Everyone's The Asshole", text)
+    text = re.sub(r"\bNAH\b", "No Assholes Here", text)
+    text = re.sub(r"\bTIFU\b", "Today I Fucked Up", text)
 
     if len(text) > 550:
         split_text = [
@@ -100,7 +100,11 @@ def get_audio(thread):
     length += tts_handler(
         thread["subreddit"], thread["id"], "title.mp3", thread["title"]
     )
-    length += tts_handler(thread["subreddit"], thread["id"], "body.mp3", thread["body"])
+
+    if thread["body"]:
+        length += tts_handler(
+            thread["subreddit"], thread["id"], "body.mp3", thread["body"]
+        )
 
     if length >= 45:
         thread["comments"] = []

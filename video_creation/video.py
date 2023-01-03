@@ -21,7 +21,10 @@ def get_video(thread):
     # Get audio clips
     audio = []
     audio.append(AudioFileClip(f"{path}/audio/title.mp3"))
-    audio.append(AudioFileClip(f"{path}/audio/body.mp3"))
+
+    if thread["body"]:
+        audio.append(AudioFileClip(f"{path}/audio/body.mp3"))
+        
     for comment in thread["comments"]:
         audio.append(AudioFileClip(f"{path}/audio/{comment['id']}.mp3"))
 
@@ -39,18 +42,26 @@ def get_video(thread):
         .crossfadein(0.2)
         .crossfadeout(0.2)
     )
-    screenshots.append(
-        ImageClip(f"{path}/screenshots/body.png")
-        .set_duration(audio[1].duration)
-        .resize(width=980)
-        .set_opacity(0.9)
-        .crossfadein(0.2)
-        .crossfadeout(0.2)
-    )
+
+    if thread["body"]:
+        screenshots.append(
+            ImageClip(f"{path}/screenshots/body.png")
+            .set_duration(audio[1].duration)
+            .resize(width=980)
+            .set_opacity(0.9)
+            .crossfadein(0.2)
+            .crossfadeout(0.2)
+        )
+
     for i, comment in enumerate(thread["comments"]):
+        if thread["body"]:
+            i += 2
+        else:
+            i += 1
+
         screenshots.append(
             ImageClip(f"{path}/screenshots/{comment['id']}.png")
-            .set_duration(audio[i + 2].duration)
+            .set_duration(audio[i].duration)
             .resize(width=980)
             .set_opacity(0.9)
             .crossfadein(0.2)

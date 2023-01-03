@@ -4,7 +4,7 @@ import os
 import praw
 from dotenv import load_dotenv
 
-from video_creation.thread import get_threads, get_thread_content
+from video_creation.thread import get_thread
 from video_creation.tts import get_audio
 from video_creation.screenshots import get_screenshots
 from video_creation.background import get_subclip
@@ -35,7 +35,7 @@ def main():
     count = 0
 
     for thread in threads:
-        thread = get_thread_content(thread)
+        thread = get_thread(thread)
 
         if thread is None:
             continue
@@ -53,7 +53,7 @@ def main():
         get_video(thread)
 
         count += 1
-        if count == 5:
+        if count == 1:
             break
 
 
@@ -63,7 +63,7 @@ reddit = praw.Reddit(
     client_secret=os.getenv("CLIENT_SECRET"),
     user_agent=os.getenv("USER_AGENT"),
 )
-subreddits = ["AmItheAsshole", "offmychest"]
+subreddits = ["AmItheAsshole"]
 
 init()
 

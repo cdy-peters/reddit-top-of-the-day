@@ -34,11 +34,13 @@ def get_screenshots(thread):
         page.locator('[data-adclicklocation="title"]').screenshot(
             path=f"{path}/title.png"
         )
-        page.locator('[data-adclicklocation="media"]').screenshot(
-            path=f"{path}/body.png"
-        )
 
-        for i, comment in enumerate(thread["comments"]):
+        if thread["body"]:
+            page.locator('[data-adclicklocation="media"]').screenshot(
+                path=f"{path}/body.png"
+            )
+
+        for comment in thread["comments"]:
             page.goto(comment["url"], timeout=0)
 
             if page.locator('[data-testid="content-gate"]').is_visible():
