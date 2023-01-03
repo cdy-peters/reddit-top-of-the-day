@@ -30,8 +30,11 @@ def get_screenshots(thread):
             if page.locator('[data-click-id="text"] button').is_visible():
                 page.locator('[data-click-id="text"] button').click()
 
-        page.locator('[data-test-id="post-content"]').screenshot(
+        page.locator('[data-adclicklocation="title"]').screenshot(
             path=f"assets/threads/{thread['id']}/screenshots/title.png"
+        )
+        page.locator('[data-adclicklocation="media"]').screenshot(
+            path=f"assets/threads/{thread['id']}/screenshots/body.png"
         )
 
         for i, comment in enumerate(thread["comments"]):
@@ -41,5 +44,5 @@ def get_screenshots(thread):
                 page.locator('[data-testid="content-gate"] button').click()
 
             page.locator(f'#t1_{comment["id"]}').screenshot(
-                path=f"assets/threads/{thread['id']}/screenshots/{i}.png"
+                path=f"assets/threads/{thread['id']}/screenshots/{comment['id']}.png"
             )

@@ -8,6 +8,7 @@ from thread import get_thread
 from tts import get_audio
 from screenshots import get_screenshots
 from background import get_subclip
+from video import get_video
 
 load_dotenv()
 
@@ -48,3 +49,6 @@ get_screenshots(thread)
 
 # Get background
 get_subclip(thread["id"], length)
+
+# # Get video
+get_video(thread)
