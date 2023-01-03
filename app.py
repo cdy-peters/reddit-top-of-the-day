@@ -4,7 +4,7 @@ import os
 import praw
 from dotenv import load_dotenv
 
-from video_creation.thread import get_thread
+from video_creation.thread import get_threads, get_thread_content
 from video_creation.tts import get_audio
 from video_creation.screenshots import get_screenshots
 from video_creation.background import get_subclip
@@ -30,19 +30,31 @@ def main():
     """Main function"""
 
     # Get the thread
-    thread = get_thread(subreddit)
+    threads = subreddit.top(time_filter="day", limit=25)
 
-    # Get audio clips
-    length = get_audio(thread)
+    count = 0
 
-    # Get screenshots
-    get_screenshots(thread)
+    for thread in threads:
+        thread = get_thread_content(thread)
 
-    # Get background
-    get_subclip(thread["subreddit"], thread["id"], length)
+        if thread is None:
+            continue
 
-    # Get video
-    get_video(thread)
+        # Get audio clips
+        length = get_audio(thread)
+
+        # Get screenshots
+        get_screenshots(thread)
+
+        # Get background
+        get_subclip(thread["subreddit"], thread["id"], length)
+
+        # Get video
+        get_video(thread)
+
+        count += 1
+        if count == 5:
+            break
 
 
 # Create the Reddit instance
