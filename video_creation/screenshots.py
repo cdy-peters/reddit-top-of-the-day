@@ -14,7 +14,7 @@ def get_screenshots(thread):
         browser = p.chromium.launch()
         context = browser.new_context()
 
-        cookie = open("./cookie-dark-mode.json", encoding="utf-8")
+        cookie = open("./data/cookie-dark-mode.json", encoding="utf-8")
         cookie = json.load(cookie)
         context.add_cookies(cookie)
 

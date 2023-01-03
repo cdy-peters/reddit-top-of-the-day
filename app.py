@@ -4,11 +4,11 @@ import os
 import praw
 from dotenv import load_dotenv
 
-from thread import get_thread
-from tts import get_audio
-from screenshots import get_screenshots
-from background import get_subclip
-from video import get_video
+from video_creation.thread import get_thread
+from video_creation.tts import get_audio
+from video_creation.screenshots import get_screenshots
+from video_creation.background import get_subclip
+from video_creation.video import get_video
 
 load_dotenv()
 
