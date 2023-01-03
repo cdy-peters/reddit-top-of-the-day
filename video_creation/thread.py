@@ -1,6 +1,7 @@
 """Gets a thread and it's contents from a subreddit"""
 
 import os
+from datetime import datetime
 from praw.models import MoreComments
 
 
@@ -9,8 +10,25 @@ def check_threads(threads: list):
 
     for thread in threads:
         # TODO: Check if the thread has been done
-        # TODO: Check if the thread is NSFW
-        # TODO: Check if the thread has comments
+
+        # Check if the thread is NSFW
+        if thread.over_18:
+            continue
+
+        # Check if the thread has a sufficient amount of comments
+        if thread.num_comments < 10:
+            continue
+
+        # Check if body is too long
+        if len(thread.selftext) > 1500:
+            continue
+
+        # Check if created less than 24 hours ago
+        now = datetime.utcnow()
+        created = datetime.utcfromtimestamp(thread.created_utc)
+        if (now - created).days > 1:
+            continue
+
         return thread
 
 
@@ -37,8 +55,10 @@ def get_comments(thread):
 def get_thread(subreddit):
     """Get a thread from the subreddit"""
 
-    threads = subreddit.top(time_filter="day", limit=1)
+    threads = subreddit.top(time_filter="day", limit=25)
     thread = check_threads(threads)
+    
+    # TODO: Handle if thread is None
 
     content = {}
     content["id"] = thread.id

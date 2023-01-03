@@ -50,5 +50,5 @@ get_screenshots(thread)
 # Get background
 get_subclip(thread["id"], length)
 
-# # Get video
+# Get video
 get_video(thread)
