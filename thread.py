@@ -21,6 +21,8 @@ def get_comments(thread):
     for comment in thread.comments:
         if isinstance(comment, MoreComments):
             continue
+        if comment.stickied:
+            continue
         if len(comment.body) <= 500:
             comments.append(
                 {
