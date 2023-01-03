@@ -52,7 +52,7 @@ def get_video(thread):
     for i, comment in enumerate(thread["comments"]):
         screenshots.append(
             ImageClip(f"assets/threads/{thread['id']}/screenshots/{comment['id']}.png")
-            .set_duration(audio[i + 1].duration)
+            .set_duration(audio[i + 2].duration)
             .resize(width=980)
             .set_opacity(0.9)
             .crossfadein(0.2)
