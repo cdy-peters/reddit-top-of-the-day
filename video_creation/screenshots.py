@@ -31,7 +31,7 @@ def get_screenshots(thread):
             if page.locator('[data-click-id="text"] button').is_visible():
                 page.locator('[data-click-id="text"] button').click()
 
-        page.locator('[data-adclicklocation="title"]').screenshot(
+        page.locator('[data-test-id="post-content"] > [data-adclicklocation="title"]').screenshot(
             path=f"{path}/title.png"
         )
 
