@@ -1,6 +1,7 @@
 """Main"""
 
 import os
+import json
 import praw
 from dotenv import load_dotenv
 
@@ -51,6 +52,11 @@ def main():
 
         # Get video
         get_video(thread)
+
+        # Add thread to json file
+        path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}"
+        with open(f"{path}/thread.json", "w", encoding="utf-8") as f:
+            json.dump(thread, f)
 
         count += 1
         if count == 1:

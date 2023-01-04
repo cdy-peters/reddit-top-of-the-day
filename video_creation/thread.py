@@ -49,7 +49,7 @@ def get_thread(thread):
         return None
 
     content = {
-        "subreddit": thread.subreddit,
+        "subreddit": thread.subreddit.display_name,
         "id": thread.id,
         "url": f"https://www.reddit.com{thread.permalink}",
         "title": thread.title,
