@@ -29,6 +29,12 @@ def init():
     if not os.path.exists("assets/approved"):
         os.mkdir("assets/approved")
 
+    if not os.path.exists("data/videos.json"):
+        obj = {"pending": {}, "approved": {}, "deleted": {}}
+
+        with open("data/videos.json", "w", encoding="utf-8") as f:
+            json.dump(obj, f)
+
 
 def main():
     """Main function"""
@@ -56,14 +62,27 @@ def main():
         # Get video
         get_video(thread)
 
-        # Add thread to json file
+        # Add thread object to thread.json
         path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}"
         with open(f"{path}/thread.json", "w", encoding="utf-8") as f:
             json.dump(thread, f)
 
+        # Add video to videos.json
+        with open("data/videos.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        pending = data["pending"]
+        if thread["subreddit"] not in pending:
+            pending[thread["subreddit"]] = []
+        pending[thread["subreddit"]].append(thread["id"])
+
+        with open("data/videos.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+
         count += 1
         if count == 1:
             break
+
 
 if __name__ == "__main__":
     # Create the Reddit instance
