@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ data.title }}{% endblock %}
+
+{% block content %}
+    <video width="320" height="240" controls>
+        <source src="{{ url_for('video', subreddit=data.subreddit, thread=data.id) }}" type="video/mp4">
+    </video>
+
+    <h2>
+        <a href="{{ data.url }}" target="blank">
+            {{ data.title }}</a>
+    </h2>
+
+    <p>{{ data.body }}</p>
+
+    <h3>{{ data.comments | length }} comments used</h3>
+
+    {% for comment in data.comments %}
+        <div class="comment">
+            <p>
+                <a href="{{ comment.url }}" target="blank">
+                    {{ comment.body }}</a>
+            </p>
+        </div>
+    {% endfor %}
+{% endblock %}

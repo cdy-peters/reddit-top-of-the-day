@@ -62,20 +62,20 @@ def main():
         if count == 1:
             break
 
+if __name__ == "__main__":
+    # Create the Reddit instance
+    reddit = praw.Reddit(
+        client_id=os.getenv("CLIENT_ID"),
+        client_secret=os.getenv("CLIENT_SECRET"),
+        user_agent=os.getenv("USER_AGENT"),
+    )
 
-# Create the Reddit instance
-reddit = praw.Reddit(
-    client_id=os.getenv("CLIENT_ID"),
-    client_secret=os.getenv("CLIENT_SECRET"),
-    user_agent=os.getenv("USER_AGENT"),
-)
-subreddits = ["AmItheAsshole"]
+    init()
 
-init()
+    subreddits = ["AmItheAsshole"]
+    for subreddit in subreddits:
+        if not os.path.exists(f"assets/subreddits/{subreddit}"):
+            os.mkdir(f"assets/subreddits/{subreddit}")
 
-for subreddit in subreddits:
-    if not os.path.exists(f"assets/subreddits/{subreddit}"):
-        os.mkdir(f"assets/subreddits/{subreddit}")
-
-    subreddit = reddit.subreddit(subreddit)
-    main()
+        subreddit = reddit.subreddit(subreddit)
+        main()
