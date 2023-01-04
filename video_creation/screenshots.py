@@ -3,7 +3,9 @@
 import os
 import json
 from playwright.sync_api import sync_playwright, ViewportSize
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def get_screenshots(thread):
     """Gets screenshots of the thread"""
@@ -20,6 +22,18 @@ def get_screenshots(thread):
         context.add_cookies(cookie)
 
         page = context.new_page()
+
+        # Login if thread is NSFW
+        if thread['over_18']:
+            print('Logging in...')
+            page.goto("https://reddit.com/login")
+
+            page.locator("input[name='username']").fill(os.getenv("REDDIT_USERNAME"))
+            page.locator("input[name='password']").fill(os.getenv("REDDIT_PASSWORD"))
+            page.get_by_role("button", name="Log in").click()
+
+            page.wait_for_load_state('networkidle')
+
         page.goto(thread["url"], timeout=0)
         page.set_viewport_size(ViewportSize(width=1920, height=1080))
 

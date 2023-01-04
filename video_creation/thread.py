@@ -43,10 +43,6 @@ def get_thread(thread):
         if thread.id in data["deleted"][thread.subreddit.display_name]:
             return None
 
-    # Check if the thread is NSFW
-    if thread.over_18:
-        return None
-
     # Check if the thread has a sufficient amount of comments
     if thread.num_comments < 10:
         return None
@@ -65,6 +61,7 @@ def get_thread(thread):
         "subreddit": thread.subreddit.display_name,
         "id": thread.id,
         "url": f"https://www.reddit.com{thread.permalink}",
+        "over_18": thread.over_18,
         "title": thread.title,
         "body": thread.selftext,
         "comments": get_comments(thread),
