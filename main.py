@@ -20,11 +20,14 @@ def init():
     if not os.path.exists("assets"):
         os.mkdir("assets")
 
+    if not os.path.exists("assets/backgrounds"):
+        os.mkdir("assets/backgrounds")
+
     if not os.path.exists("assets/subreddits"):
         os.mkdir("assets/subreddits")
 
-    if not os.path.exists("assets/backgrounds"):
-        os.mkdir("assets/backgrounds")
+    if not os.path.exists("assets/approved"):
+        os.mkdir("assets/approved")
 
 
 def main():

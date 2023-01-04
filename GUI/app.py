@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, redirect
 
 app = Flask(__name__)
 
@@ -55,6 +55,34 @@ def video(subreddit, thread):
     return send_from_directory(
         f"../assets/subreddits/{subreddit}/{thread}", "video.mp4"
     )
+
+
+@app.route("/approve/<subreddit>/<thread>")
+def approve(subreddit, thread):
+    """Approves video"""
+
+    # Update videos.json
+    with open("../data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    approved = data["approved"]
+
+    if subreddit not in approved:
+        approved[subreddit] = []
+    approved[subreddit].append(thread)
+
+    with open("../data/videos.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+    # Move video to approved folder
+    if not os.path.exists(f"../assets/approved/{subreddit}"):
+        os.makedirs(f"../assets/approved/{subreddit}")
+
+    os.rename(
+        f"../assets/subreddits/{subreddit}/{thread}",
+        f"../assets/approved/{subreddit}/{thread}",
+    )
+
+    return redirect('/')
 
 
 if __name__ == "__main__":

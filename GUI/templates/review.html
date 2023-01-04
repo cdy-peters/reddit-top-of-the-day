@@ -24,4 +24,10 @@
             </p>
         </div>
     {% endfor %}
+
+    <button>
+        <a href="{{ url_for('approve', subreddit=data.subreddit, thread=data.id) }}">
+            Approve
+        </a>
+    </button>
 {% endblock %}
