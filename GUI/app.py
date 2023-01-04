@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 from flask import Flask, render_template, send_from_directory, redirect
 
 app = Flask(__name__)
@@ -81,8 +82,34 @@ def approve(subreddit, thread):
         f"../assets/subreddits/{subreddit}/{thread}",
         f"../assets/approved/{subreddit}/{thread}",
     )
+    if os.listdir(f"../assets/subreddits/{subreddit}") == []:
+        os.rmdir(f"../assets/subreddits/{subreddit}")
 
-    return redirect('/')
+    return redirect("/")
+
+
+@app.route("/delete/<subreddit>/<thread>")
+def delete(subreddit, thread):
+    """Deletes video"""
+
+    # Updates videos.json
+    with open("../data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    deleted = data["deleted"]
+
+    if subreddit not in deleted:
+        deleted[subreddit] = []
+    deleted[subreddit].append(thread)
+
+    with open("../data/videos.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+    # Delete video
+    shutil.rmtree(f"../assets/subreddits/{subreddit}/{thread}")
+    if os.listdir(f"../assets/subreddits/{subreddit}") == []:
+        os.rmdir(f"../assets/subreddits/{subreddit}")
+
+    return redirect("/")
 
 
 if __name__ == "__main__":

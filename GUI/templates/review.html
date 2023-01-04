@@ -30,4 +30,10 @@
             Approve
         </a>
     </button>
+
+    <button>
+        <a href="{{ url_for('delete', subreddit=data.subreddit, thread=data.id) }}">
+            Delete
+        </a>
+    </button>
 {% endblock %}
