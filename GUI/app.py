@@ -65,25 +65,37 @@ def approve(subreddit, thread):
     # Update videos.json
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
+
+    pending = data["pending"]
     approved = data["approved"]
 
     if subreddit not in approved:
         approved[subreddit] = []
     approved[subreddit].append(thread)
 
+    pending[subreddit].remove(thread)
+    if pending[subreddit] == []:
+        pending.pop(subreddit)
+
     with open("../data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-    # Move video to approved folder
+    # Move video to approved folder, deleting unnecessary files
+    subreddit_path = f"../assets/subreddits/{subreddit}"
+
+    shutil.rmtree(f"{subreddit_path}/{thread}/audio")
+    shutil.rmtree(f"{subreddit_path}/{thread}/screenshots")
+    os.remove(f"{subreddit_path}/{thread}/background.mp4")
+
     if not os.path.exists(f"../assets/approved/{subreddit}"):
         os.makedirs(f"../assets/approved/{subreddit}")
 
     os.rename(
-        f"../assets/subreddits/{subreddit}/{thread}",
+        f"{subreddit_path}/{thread}",
         f"../assets/approved/{subreddit}/{thread}",
     )
-    if os.listdir(f"../assets/subreddits/{subreddit}") == []:
-        os.rmdir(f"../assets/subreddits/{subreddit}")
+    if os.listdir(subreddit_path) == []:
+        os.rmdir(subreddit_path)
 
     return redirect("/")
 
@@ -95,19 +107,27 @@ def delete(subreddit, thread):
     # Updates videos.json
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
+
+    pending = data["pending"]
     deleted = data["deleted"]
 
     if subreddit not in deleted:
         deleted[subreddit] = []
     deleted[subreddit].append(thread)
 
+    pending[subreddit].remove(thread)
+    if pending[subreddit] == []:
+        pending.pop(subreddit)
+
     with open("../data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
     # Delete video
-    shutil.rmtree(f"../assets/subreddits/{subreddit}/{thread}")
-    if os.listdir(f"../assets/subreddits/{subreddit}") == []:
-        os.rmdir(f"../assets/subreddits/{subreddit}")
+    subreddit_path = f"../assets/subreddits/{subreddit}"
+
+    shutil.rmtree(f"{subreddit_path}/{thread}")
+    if os.listdir(subreddit_path) == []:
+        os.rmdir(subreddit_path)
 
     return redirect("/")
 
