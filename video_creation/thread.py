@@ -1,6 +1,7 @@
 """Gets a thread and it's contents from a subreddit"""
 
 import os
+import json
 from datetime import datetime
 from praw.models import MoreComments
 
@@ -28,7 +29,19 @@ def get_comments(thread):
 def get_thread(thread):
     """Gets the content of the thread"""
 
-    # TODO: Check if the thread has been done
+    # Check if the thread has been done
+    with open("data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    if thread.subreddit.display_name in data["pending"]:
+        if thread.id in data["pending"][thread.subreddit.display_name]:
+            return None
+    if thread.subreddit.display_name in data["approved"]:
+        if thread.id in data["approved"][thread.subreddit.display_name]:
+            return None
+    if thread.subreddit.display_name in data["deleted"]:
+        if thread.id in data["deleted"][thread.subreddit.display_name]:
+            return None
 
     # Check if the thread is NSFW
     if thread.over_18:
