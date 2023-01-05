@@ -11,6 +11,8 @@ from video_creation.screenshots import get_screenshots
 from video_creation.background import get_subclip
 from video_creation.video import get_video
 
+from utils.log_videos import log_videos
+
 load_dotenv()
 
 
@@ -31,7 +33,7 @@ def init():
 
     # Stores the subreddit and thread id of produced videos
     if not os.path.exists("data/videos.json"):
-        obj = {"pending": {}, "approved": {}, "deleted": {}}
+        obj = {"pending": {}, "approved": {}, "deleted": {}, "failed": {}}
 
         with open("data/videos.json", "w", encoding="utf-8") as f:
             json.dump(obj, f)
@@ -51,42 +53,37 @@ def main():
     count = 0
 
     for thread in threads:
-        thread = get_thread(thread)
+        subreddit_name = thread.subreddit.display_name
+        thread_id = thread.id
 
+        thread = get_thread(thread)
         if thread is None:
+            log_videos(subreddit_name, "failed", thread_id)
             continue
 
         # Get audio clips
-        tts = TTS(thread["subreddit"], thread["id"])
+        tts = TTS(subreddit_name, thread_id)
         length = tts.get_audio(thread)
         if length is None:  # The the audio is too long
+            log_videos(subreddit_name, "failed", thread_id)
             continue
 
         # Get screenshots
         get_screenshots(thread)
 
         # Get background
-        get_subclip(thread["subreddit"], thread["id"], length)
+        get_subclip(subreddit_name, thread_id, length)
 
         # Get video
         get_video(thread)
 
         # Add thread object to thread.json
-        path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}"
+        path = f"assets/subreddits/{subreddit_name}/{thread_id}"
         with open(f"{path}/thread.json", "w", encoding="utf-8") as f:
             json.dump(thread, f)
 
         # Add video to videos.json
-        with open("data/videos.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        pending = data["pending"]
-        if thread["subreddit"] not in pending:
-            pending[thread["subreddit"]] = []
-        pending[thread["subreddit"]].append(thread["id"])
-
-        with open("data/videos.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4)
+        log_videos(subreddit_name, "pending", thread_id)
 
         count += 1
         if count == 1:
