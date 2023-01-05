@@ -5,7 +5,7 @@ from datetime import datetime
 from praw.models import MoreComments
 
 from utils.log_videos import video_exists
-
+from utils.sanitize_text import clean_text
 
 def get_comments(thread):
     """Get the comments from the thread"""
@@ -16,7 +16,9 @@ def get_comments(thread):
             continue
         if comment.stickied:
             continue
-        if len(comment.body) <= 500:
+
+        text = clean_text(comment.body)
+        if len(text) <= 500 and len(text) > 50:
             comments.append(
                 {
                     "id": comment.id,

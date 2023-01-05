@@ -1,45 +1,12 @@
 """Gets the speech audio of the thread content"""
 
 import os
-import re
 import shutil
-import requests
 import time
+import requests
 from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
 
-
-def check_text(text):
-    """Checks and cleans the text"""
-
-    # Remove links
-    regex_urls = r"((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*"
-    text = re.sub(regex_urls, " ", text)
-
-    # Remove special characters
-    regex_expr = r"\s['|’]|['|’]\s|[\^_~@!;#:\-–—%“”‘\"%\*\/{}\[\]\(\)\\|<>=+]"
-    text = re.sub(regex_expr, " ", text)
-
-    # Replace symbols with words
-    text = text.replace("+", "plus").replace("&", "and")
-
-    # Trim whitespace
-    text = re.sub(r"\s+", " ", text)
-
-    # Expand acronyms
-    text = re.sub(r"\bNTA\b", "Not The Asshole", text)
-    text = re.sub(r"\bYTA\b", "You're The Asshole", text)
-    text = re.sub(r"\bAITA\b", "Am I The Asshole", text)
-    text = re.sub(r"\bETA\b", "Everyone's The Asshole", text)
-    text = re.sub(r"\bNAH\b", "No Assholes Here", text)
-    text = re.sub(r"\bTIFU\b", "Today I Fucked Up", text)
-
-    if len(text) > 550:
-        split_text = [
-            i.group().strip() for i in re.finditer(r" *(((.|\n){0,550})(\.|.$))", text)
-        ]
-        return split_text
-
-    return [text]
+from utils.sanitize_text import check_text
 
 
 class TTS:
