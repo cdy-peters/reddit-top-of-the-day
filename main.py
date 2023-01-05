@@ -29,11 +29,17 @@ def init():
     if not os.path.exists("assets/approved"):
         os.mkdir("assets/approved")
 
+    # Stores the subreddit and thread id of produced videos
     if not os.path.exists("data/videos.json"):
         obj = {"pending": {}, "approved": {}, "deleted": {}}
 
         with open("data/videos.json", "w", encoding="utf-8") as f:
             json.dump(obj, f)
+
+    # Stores Reddit authentication state
+    if not os.path.exists("data/state.json"):
+        with open("data/state.json", "w", encoding="utf-8") as f:
+            json.dump({}, f)
 
 
 def main():

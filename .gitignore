@@ -2,6 +2,8 @@
 assets/
 *.mp4
 videos.json
+state.json
+testing.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
