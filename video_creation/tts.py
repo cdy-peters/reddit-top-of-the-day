@@ -41,84 +41,98 @@ def check_text(text):
     return [text]
 
 
-def tts_handler(subreddit, thread_id, filename, text):
-    """Handles the text to speech"""
+class TTS:
+    """TTS class"""
 
-    dir_path = f"assets/subreddits/{subreddit}/{thread_id}/audio"
-    file_path = f"{dir_path}/{filename}"
+    def __init__(self, subreddit, thread_id):
+        self.subreddit = subreddit
+        self.thread_id = thread_id
+        self.length = 0
 
-    text = check_text(text)
-    audio = []
+    def tts_handler(self, filename, text):
+        """Handles the text to speech"""
 
-    for i in text:
-        url = "https://streamlabs.com/polly/speak"
-        payload = {
-            "voice": "Matthew",
-            "text": i,
-            "service": "polly",
-        }
+        dir_path = f"assets/subreddits/{self.subreddit}/{self.thread_id}/audio"
+        file_path = f"{dir_path}/{filename}"
 
-        try:
-            response = requests.post(url, data=payload, timeout=10)  # ? Rate limit?
-        except requests.exceptions.RequestException as err:
-            print(err)
-            return
+        text = check_text(text)
+        audio = []
 
-        audio.append(response.json()["speak_url"])
+        for i in text:
+            url = "https://streamlabs.com/polly/speak"
+            payload = {
+                "voice": "Matthew",
+                "text": i,
+                "service": "polly",
+            }
 
-    if len(audio) > 1:
-        path = f"{dir_path}/temp"
+            try:
+                response = requests.post(url, data=payload, timeout=10)  # ? Rate limit?
+            except requests.exceptions.RequestException as err:
+                print(err)
+                return
 
-        os.mkdir(path)
+            audio.append(response.json()["speak_url"])
 
-        for i, url in enumerate(audio):
-            with open(f"{path}/{i}.mp3", "wb") as f:
-                f.write(requests.get(url, timeout=10).content)
+        if len(audio) > 1:
+            path = f"{dir_path}/temp"
 
-        audio_clips = []
-        for i in range(len(audio)):
-            audio_clips.append(AudioFileClip(f"{path}/{i}.mp3"))
+            os.mkdir(path)
 
-        CompositeAudioClip([concatenate_audioclips(audio_clips)]).write_audiofile(
-            file_path, fps=44100
-        )
+            for i, url in enumerate(audio):
+                with open(f"{path}/{i}.mp3", "wb") as f:
+                    f.write(requests.get(url, timeout=10).content)
 
-        shutil.rmtree(path)
-    else:
-        with open(file_path, "wb") as f:
-            f.write(requests.get(audio[0], timeout=10).content)
-    return AudioFileClip(file_path).duration
+            audio_clips = []
+            for i in range(len(audio)):
+                audio_clips.append(AudioFileClip(f"{path}/{i}.mp3"))
 
+            CompositeAudioClip([concatenate_audioclips(audio_clips)]).write_audiofile(
+                file_path, fps=44100
+            )
 
-def get_audio(thread):
-    """Gets the audio of the thread"""
+            shutil.rmtree(path)
+        else:
+            with open(file_path, "wb") as f:
+                f.write(requests.get(audio[0], timeout=10).content)
 
-    os.mkdir(f'assets/subreddits/{thread["subreddit"]}/{thread["id"]}/audio')
+        self.length += AudioFileClip(file_path).duration
 
-    length = 0
+    def get_audio(self, thread):
+        """Gets the audio of the thread"""
 
-    length += tts_handler(
-        thread["subreddit"], thread["id"], "title.mp3", thread["title"]
-    )
+        os.mkdir(f"assets/subreddits/{self.subreddit}/{self.thread_id}/audio")
 
-    if thread["body"]:
-        length += tts_handler(
-            thread["subreddit"], thread["id"], "body.mp3", thread["body"]
-        )
+        # Title tts
+        self.tts_handler("title.mp3", thread["title"])
 
-    if length >= 45:
-        thread["comments"] = []
-        return length
+        # Body tts
+        if thread["body"]:
+            self.tts_handler("body.mp3", thread["body"])
 
-    comments = []
-    for comment in thread["comments"]:
-        # Max length of video
-        if length >= 90:
-            thread["comments"] = comments
-            break
-        length += tts_handler(
-            thread["subreddit"], thread["id"], f'{comment["id"]}.mp3', comment["body"]
-        )
-        comments.append(comment)
+        if self.length > 60:  # Max length of video
+            return None
+        if self.length >= 45:
+            thread["comments"] = []
+            return self.length
 
-    return length
+        # Comments tts
+        comments = []
+        for comment in thread["comments"]:
+            self.tts_handler(f'{comment["id"]}.mp3', comment["body"])
+
+            if self.length >= 60:  # If new comment exceeds max length of video
+                self.length -= AudioFileClip(
+                    f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
+                ).duration
+
+                os.remove(
+                    f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
+                )
+
+                thread["comments"] = comments
+                break
+
+            comments.append(comment)
+
+        return self.length

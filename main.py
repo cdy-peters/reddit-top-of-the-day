@@ -6,7 +6,7 @@ import praw
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
-from video_creation.tts import get_audio
+from video_creation.tts import TTS
 from video_creation.screenshots import get_screenshots
 from video_creation.background import get_subclip
 from video_creation.video import get_video
@@ -57,7 +57,10 @@ def main():
             continue
 
         # Get audio clips
-        length = get_audio(thread)
+        tts = TTS(thread["subreddit"], thread["id"])
+        length = tts.get_audio(thread)
+        if length is None:  # The the audio is too long
+            continue
 
         # Get screenshots
         get_screenshots(thread)
