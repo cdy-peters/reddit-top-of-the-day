@@ -72,7 +72,10 @@ class TTS:
             with open(file_path, "wb") as f:
                 f.write(requests.get(audio[0], timeout=10).content)
 
-        self.length += AudioFileClip(file_path).duration
+        # Add length of clip to total length
+        clip = AudioFileClip(file_path)
+        clip.close()
+        self.length += clip.duration
 
     def get_audio(self, thread):
         """Gets the audio of the thread"""
@@ -98,13 +101,14 @@ class TTS:
             self.tts_handler(f'{comment["id"]}.mp3', comment["body"])
 
             if self.length >= 60:  # If new comment exceeds max length of video
-                self.length -= AudioFileClip(
-                    f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
-                ).duration
+                path = f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
 
-                os.remove(
-                    f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
-                )
+                # Remove length of last clip from total length
+                clip = AudioFileClip(path)
+                clip.close()
+                self.length -= clip.duration
+
+                os.remove(path)
 
                 thread["comments"] = comments
                 break
