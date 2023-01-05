@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import requests
+import time
 from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
 
 
@@ -67,10 +68,18 @@ class TTS:
             }
 
             try:
-                response = requests.post(url, data=payload, timeout=10)  # ? Rate limit?
+                response = requests.post(url, data=payload, timeout=10)
             except requests.exceptions.RequestException as err:
                 print(err)
                 return
+
+            while response.status_code == 429:
+                time.sleep(int(response.headers["retry-after"]))
+                try:
+                    response = requests.post(url, data=payload, timeout=10)
+                except requests.exceptions.RequestException as err:
+                    print(err)
+                    return
 
             audio.append(response.json()["speak_url"])
 
