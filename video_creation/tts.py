@@ -90,6 +90,8 @@ class TTS:
             self.tts_handler("body.mp3", thread["body"])
 
         if self.length > 60:  # Max length of video
+            # Delete thread directory
+            shutil.rmtree(f"assets/subreddits/{self.subreddit}/{self.thread_id}")
             return None
         if self.length >= 45:
             thread["comments"] = []
