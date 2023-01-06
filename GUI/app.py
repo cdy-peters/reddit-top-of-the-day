@@ -1,7 +1,14 @@
 import os
 import json
 import shutil
-from flask import Flask, render_template, send_from_directory, redirect, request
+from flask import (
+    Flask,
+    render_template,
+    send_from_directory,
+    redirect,
+    request,
+    jsonify,
+)
 
 app = Flask(__name__)
 
@@ -58,62 +65,6 @@ def video(subreddit, thread):
     )
 
 
-@app.route("/edit/body/<subreddit>/<thread>", methods=["GET", "POST"])
-def edit_body(subreddit, thread):
-    """Edits body of video"""
-
-    if request.method == "POST":
-        with open(
-            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
-            "r",
-            encoding="utf-8",
-        ) as f:
-            data = json.load(f)
-
-        data["body"] = request.form["body"]
-
-        with open(
-            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
-            "w",
-            encoding="utf-8",
-        ) as f:
-            json.dump(data, f, indent=4)
-
-        return "Success"
-
-    return redirect("/")
-
-
-@app.route("/edit/comment/<subreddit>/<thread>/<comment_id>", methods=["GET", "POST"])
-def edit_comment(subreddit, thread, comment_id):
-    """Edits comment of video"""
-
-    if request.method == "POST":
-        with open(
-            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
-            "r",
-            encoding="utf-8",
-        ) as f:
-            data = json.load(f)
-
-        comments = data["comments"]
-        for i, comment in enumerate(comments):
-            if comment["id"] == comment_id:
-                comments[i]["body"] = request.form["comment"]
-                break
-
-        with open(
-            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
-            "w",
-            encoding="utf-8",
-        ) as f:
-            json.dump(data, f, indent=4)
-
-        return "Success"
-
-    return redirect("/")
-
-
 @app.route("/queue_upload/<subreddit>/<thread>")
 def queue_upload(subreddit, thread):
     """Approves video"""
@@ -156,27 +107,58 @@ def queue_upload(subreddit, thread):
     return redirect("/")
 
 
-@app.route("/queue_remake/<subreddit>/<thread>")
+@app.route("/queue_remake/<subreddit>/<thread>", methods=["GET", "POST"])
 def queue_remake(subreddit, thread):
     """Queues video for remake"""
 
-    # Update videos.json
-    with open("../data/videos.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+    if request.method == "POST":
+        req_data = request.get_json()
 
-    pending_review = data["pending_review"]
-    pending_remake = data["pending_remake"]
+        # Update thread.json
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            data = json.load(f)
 
-    if subreddit not in pending_remake:
-        pending_remake[subreddit] = []
-    pending_remake[subreddit].append(thread)
+        # Replace body
+        if "body" in req_data:
+            data["body"] = req_data["body"]
 
-    pending_review[subreddit].remove(thread)
-    if pending_review[subreddit] == []:
-        pending_review.pop(subreddit)
+        # Replace comments
+        if req_data["comments"]:
+            for comment in req_data["comments"]:
+                for old_comment in data["comments"]:
+                    if old_comment["id"] == comment:
+                        old_comment["body"] = req_data["comments"][comment]
 
-    with open("../data/videos.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(data, f, indent=4)
+
+        # Update videos.json
+        with open("../data/videos.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        pending_review = data["pending_review"]
+        pending_remake = data["pending_remake"]
+
+        if subreddit not in pending_remake:
+            pending_remake[subreddit] = []
+        pending_remake[subreddit].append(thread)
+
+        pending_review[subreddit].remove(thread)
+        if pending_review[subreddit] == []:
+            pending_review.pop(subreddit)
+
+        with open("../data/videos.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+
+        return jsonify({"success": True})
 
     return redirect("/")
 

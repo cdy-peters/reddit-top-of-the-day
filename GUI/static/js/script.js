@@ -1,71 +1,74 @@
 const remakeBtn = $("#remakeBtn");
 
+const originalThread = { comments: {} };
+const editedThread = { comments: {} };
+
+const remakeBtnVisibility = () => {
+  !("body" in editedThread) && Object.keys(editedThread.comments).length === 0
+    ? remakeBtn.attr("hidden", true)
+    : remakeBtn.attr("hidden", false);
+};
+
 // Edit body
-var originalBody;
+const body = $("#bodyText");
+const editBodyBtn = $("#editBodyBtn");
+const confirmBodyBtn = $("#confirmBodyBtn");
 
 const inputBody = () => {
-  const body = $("#bodyText");
-  const confirmBtn = $("#confirmBodyBtn");
-
   // Disable confirm button if body is unchanged
-  confirmBtn.attr("disabled", body.text() === originalBody);
+  confirmBodyBtn.attr("disabled", body.text() === editedThread.body);
 };
 
 const editBody = () => {
-  const body = $("#bodyText");
-  const editBtn = $("#editBodyBtn");
-  const confirmBtn = $("#confirmBodyBtn");
-
-  if (editBtn.text() === "Edit") {
-    originalBody = body.text();
+  if (editBodyBtn.text() === "Edit") {
+    // Add body to originalThread if it doesn't exist
+    if (!("body" in originalThread)) originalThread["body"] = body.text();
 
     body.attr("contenteditable", true);
     body.focus();
 
-    confirmBtn.attr("hidden", false);
-    editBtn.text("Cancel");
+    confirmBodyBtn.attr("hidden", false);
+    editBodyBtn.text("Cancel");
   } else {
-    body.text(originalBody);
+    // Resets body
+    body.text(editedThread.body || originalThread.body);
+
     body.attr("contenteditable", false);
 
-    confirmBtn.attr("hidden", true);
-    confirmBtn.attr("disabled", true);
-    editBtn.text("Edit");
+    confirmBodyBtn.attr("hidden", true);
+    confirmBodyBtn.attr("disabled", true);
+    editBodyBtn.text("Edit");
   }
 };
 
-const confirmBody = (subreddit, id) => {
-  const body = $("#bodyText");
-  const editBtn = $("#editBodyBtn");
-  const confirmBtn = $("#confirmBodyBtn");
+const confirmBody = () => {
+  // Check if changed body is the same as the original
+  body.text() === originalThread.body
+    ? delete editedThread.body
+    : (editedThread.body = body.text());
 
-  $.ajax({
-    url: `/edit/body/${subreddit}/${id}`,
-    type: "POST",
-    data: {
-      body: body.text(),
-    },
-    success: (data) => {
-      body.attr("contenteditable", false);
+  body.attr("contenteditable", false);
 
-      confirmBtn.attr("hidden", true);
-      confirmBtn.attr("disabled", true);
-      editBtn.text("Edit");
+  confirmBodyBtn.attr("hidden", true);
+  confirmBodyBtn.attr("disabled", true);
+  editBodyBtn.text("Edit");
 
-      remakeBtn.attr("hidden", false);
-    },
-  });
+  remakeBtnVisibility();
 };
 
 // Edit comment
-var originalComment;
-
 const inputComment = (commentId) => {
   const comment = $(`#${commentId} #commentText`);
   const confirmBtn = $(`#${commentId} #confirmBtn`);
 
   // Disable confirm button if comment is unchanged
-  confirmBtn.attr("disabled", comment.text() === originalComment);
+  var bool;
+
+  editedThread.comments[commentId]
+    ? (bool = editedThread.comments[commentId])
+    : (bool = originalThread.comments[commentId]);
+
+  confirmBtn.attr("disabled", comment.text() === bool);
 };
 
 const editComment = (commentId) => {
@@ -74,16 +77,21 @@ const editComment = (commentId) => {
   const confirmBtn = $(`#${commentId} #confirmBtn`);
 
   if (editBtn.text() === "Edit") {
-    originalComment = comment.text();
+    // Add comment to originalThread if it doesn't exist
+    if (!(commentId in originalThread.comments))
+      originalThread.comments[commentId] = comment.text();
 
     comment.attr("contenteditable", true);
     comment.focus();
 
     confirmBtn.attr("hidden", false);
-    confirmBtn.attr("disabled", true);
     editBtn.text("Cancel");
   } else {
-    comment.text(originalComment);
+    // Resets comment
+    commentId in editedThread.comments
+      ? comment.text(editedThread.comments[commentId])
+      : comment.text(originalThread.comments[commentId]);
+
     comment.attr("contenteditable", false);
 
     confirmBtn.attr("hidden", true);
@@ -92,25 +100,34 @@ const editComment = (commentId) => {
   }
 };
 
-const confirmComment = (subreddit, id, commentId) => {
+const confirmComment = (commentId) => {
   const comment = $(`#${commentId} #commentText`);
   const editBtn = $(`#${commentId} #editBtn`);
   const confirmBtn = $(`#${commentId} #confirmBtn`);
 
+  // Check if changed comment is the same as the original
+  comment.text() === originalThread.comments[commentId]
+    ? delete editedThread.comments[commentId]
+    : (editedThread.comments[commentId] = comment.text());
+
+  comment.attr("contenteditable", false);
+
+  confirmBtn.attr("hidden", true);
+  confirmBtn.attr("disabled", true);
+  editBtn.text("Edit");
+
+  remakeBtnVisibility();
+};
+
+const queueRemake = (subreddit, thread) => {
   $.ajax({
-    url: `/edit/comment/${subreddit}/${id}/${commentId}`,
+    url: `/queue_remake/${subreddit}/${thread}`,
     type: "POST",
-    data: {
-      comment: comment.text(),
-    },
-    success: (data) => {
-      comment.attr("contenteditable", false);
-
-      confirmBtn.attr("hidden", true);
-      confirmBtn.attr("disabled", true);
-      editBtn.text("Edit");
-
-      remakeBtn.attr("hidden", false);
+    dataType: "json",
+    data: JSON.stringify(editedThread),
+    contentType: "application/json",
+    success: () => {
+      window.location.href = "/";
     },
   });
 };
