@@ -12,7 +12,9 @@
             {{ data.title }}</a>
     </h2>
 
-    <p>{{ data.body }}</p>
+    <p id="bodyText" oninput="inputBody()">{{ data.body }}</p>
+    <button id="editBtn" onclick="editBody()">Edit</button>
+    <button id="saveBtn" disabled hidden onclick="saveBody('{{ data.subreddit }}', '{{ data.id }}')">Save</button>
 
     <h3>{{ data.comments | length }} comments used</h3>
 

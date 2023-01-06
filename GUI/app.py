@@ -1,7 +1,7 @@
 import os
 import json
 import shutil
-from flask import Flask, render_template, send_from_directory, redirect
+from flask import Flask, render_template, send_from_directory, redirect, request
 
 app = Flask(__name__)
 
@@ -56,6 +56,32 @@ def video(subreddit, thread):
     return send_from_directory(
         f"../assets/subreddits/{subreddit}/{thread}", "video.mp4"
     )
+
+
+@app.route("/edit/body/<subreddit>/<thread>", methods=["GET", "POST"])
+def edit_body(subreddit, thread):
+    """Edits body of video"""
+
+    if request.method == "POST":
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            data = json.load(f)
+
+        data["body"] = request.form["body"]
+
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(data, f, indent=4)
+
+        return "Success"
+
+    return redirect("/")
 
 
 @app.route("/approve/<subreddit>/<thread>")
