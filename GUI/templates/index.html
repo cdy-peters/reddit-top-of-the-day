@@ -3,19 +3,19 @@
 {% block title %}Top of the Day{% endblock %}
 
 {% block content %}
-    {% for subreddit in videos %}
+    {% for subreddit in videos["pending_review"] %}
         <h2>
             <a href="https://www.reddit.com/r/{{subreddit}}/top/?t=day" target="blank">
                 r/{{subreddit}}</a>
         </h2>
 
         <div class="subreddit">
-            {% for thread in videos[subreddit] %}
+            {% for thread in videos["pending_review"][subreddit] %}
                 <div class="video">
-                    <h4>{{videos[subreddit][thread].title}}</h4>
+                    <h4>{{thread.title}}</h4>
 
                     <button type="button" class="btn btn-primary">
-                        <a href="{{ url_for('review', subreddit=subreddit, thread=thread) }}">Review Video</a>
+                        <a href="{{ url_for('review', subreddit=subreddit, thread=thread.id) }}">Review Video</a>
                 </div>
             {% endfor %}
         </div>

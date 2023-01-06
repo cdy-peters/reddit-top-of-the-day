@@ -17,29 +17,30 @@ app = Flask(__name__)
 def index():
     """Retrieves data of created videos and returns them to page"""
 
-    videos = {}
+    videos = {
+        "pending_review": {},
+        "pending_remake": {},
+        "pending_upload": {},
+    }
 
-    subreddits = os.listdir("../assets/subreddits")
+    with open("../data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    for subreddit in subreddits:
-        threads = os.listdir(f"../assets/subreddits/{subreddit}")
+    for video_type in videos:  # pylint: disable=consider-using-dict-items
+        for subreddit in data[video_type]:
+            videos[video_type][subreddit] = []
+            for thread in data[video_type][subreddit]:
+                with open(
+                    f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+                    "r",
+                    encoding="utf-8",
+                ) as f:
+                    thread_data = json.load(f)
+                videos[video_type][subreddit].append(
+                    {"id": thread_data["id"], "title": thread_data["title"]}
+                )
 
-        thread_videos = {}
-        for thread in threads:
-            if not os.path.exists(
-                f"../assets/subreddits/{subreddit}/{thread}/thread.json"
-            ):
-                continue
-
-            with open(
-                f"../assets/subreddits/{subreddit}/{thread}/thread.json",
-                "r",
-                encoding="utf-8",
-            ) as f:
-                data = json.load(f)
-                thread_videos[thread] = data
-
-        videos[subreddit] = thread_videos
+    print(videos)
 
     return render_template("index.html", videos=videos)
 
@@ -67,18 +68,18 @@ def video(subreddit, thread):
 
 @app.route("/queue_upload/<subreddit>/<thread>")
 def queue_upload(subreddit, thread):
-    """Approves video"""
+    """Approves video for upload"""
 
     # Update videos.json
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     pending_review = data["pending_review"]
-    approved_upload = data["pending_upload"]
+    pending_upload = data["pending_upload"]
 
-    if subreddit not in approved_upload:
-        approved_upload[subreddit] = []
-    approved_upload[subreddit].append(thread)
+    if subreddit not in pending_upload:
+        pending_upload[subreddit] = []
+    pending_upload[subreddit].append(thread)
 
     pending_review[subreddit].remove(thread)
     if pending_review[subreddit] == []:
@@ -86,23 +87,6 @@ def queue_upload(subreddit, thread):
 
     with open("../data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
-
-    # Move video to approved folder, deleting unnecessary files
-    subreddit_path = f"../assets/subreddits/{subreddit}"
-
-    shutil.rmtree(f"{subreddit_path}/{thread}/audio")
-    shutil.rmtree(f"{subreddit_path}/{thread}/screenshots")
-    os.remove(f"{subreddit_path}/{thread}/background.mp4")
-
-    if not os.path.exists(f"../assets/approved/{subreddit}"):
-        os.makedirs(f"../assets/approved/{subreddit}")
-
-    os.rename(
-        f"{subreddit_path}/{thread}",
-        f"../assets/approved/{subreddit}/{thread}",
-    )
-    if os.listdir(subreddit_path) == []:
-        os.rmdir(subreddit_path)
 
     return redirect("/")
 

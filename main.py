@@ -28,9 +28,6 @@ def init():
     if not os.path.exists("assets/subreddits"):
         os.mkdir("assets/subreddits")
 
-    if not os.path.exists("assets/approved"):
-        os.mkdir("assets/approved")
-
     # Stores the subreddit and thread id of produced videos
     if not os.path.exists("data/videos.json"):
         obj = {
