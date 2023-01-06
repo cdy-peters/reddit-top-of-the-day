@@ -63,7 +63,7 @@ def main():
 
         # Get audio clips
         tts = TTS(subreddit_name, thread_id)
-        length = tts.get_audio(thread)
+        length = tts.get_audio(thread, subreddit_dict["comments"])
         if length is None:  # The the audio is too long
             log_videos(subreddit_name, "failed", thread_id)
             continue
@@ -100,10 +100,10 @@ if __name__ == "__main__":
 
     init()
 
-    subreddits = ["AmItheAsshole"]
-    for subreddit in subreddits:
-        if not os.path.exists(f"assets/subreddits/{subreddit}"):
-            os.mkdir(f"assets/subreddits/{subreddit}")
+    subreddits = [{"name": "AskReddit", "comments": True}]
+    for subreddit_dict in subreddits:
+        if not os.path.exists(f"assets/subreddits/{subreddit_dict['name']}"):
+            os.mkdir(f"assets/subreddits/{subreddit_dict['name']}")
 
-        subreddit = reddit.subreddit(subreddit)
+        subreddit = reddit.subreddit(subreddit_dict["name"])
         main()

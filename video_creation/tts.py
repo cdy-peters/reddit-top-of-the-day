@@ -77,7 +77,7 @@ class TTS:
         clip.close()
         self.length += clip.duration
 
-    def get_audio(self, thread):
+    def get_audio(self, thread, comments):
         """Gets the audio of the thread"""
 
         os.mkdir(f"assets/subreddits/{self.subreddit}/{self.thread_id}/audio")
@@ -98,23 +98,24 @@ class TTS:
             return self.length
 
         # Comments tts
-        comments = []
-        for comment in thread["comments"]:
-            self.tts_handler(f'{comment["id"]}.mp3', comment["body"])
+        if comments:
+            comments = []
+            for comment in thread["comments"]:
+                self.tts_handler(f'{comment["id"]}.mp3', comment["body"])
 
-            if self.length >= 60:  # If new comment exceeds max length of video
-                path = f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
+                if self.length >= 60:  # If new comment exceeds max length of video
+                    path = f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
 
-                # Remove length of last clip from total length
-                clip = AudioFileClip(path)
-                clip.close()
-                self.length -= clip.duration
+                    # Remove length of last clip from total length
+                    clip = AudioFileClip(path)
+                    clip.close()
+                    self.length -= clip.duration
 
-                os.remove(path)
+                    os.remove(path)
 
-                thread["comments"] = comments
-                break
+                    thread["comments"] = comments
+                    break
 
-            comments.append(comment)
+                comments.append(comment)
 
         return self.length
