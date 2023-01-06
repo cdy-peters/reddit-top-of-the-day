@@ -15,7 +15,7 @@
     {% if data.body %}
         <p id="bodyText" oninput="inputBody()">{{ data.body }}</p>
         <button id="editBodyBtn" onclick="editBody()">Edit</button>
-        <button id="saveBodyBtn" disabled hidden onclick="saveBody('{{ data.subreddit }}', '{{ data.id }}')">Save</button>
+        <button id="confirmBodyBtn" disabled hidden onclick="confirmBody('{{ data.subreddit }}', '{{ data.id }}')">Confirm</button>
     {% endif %}
 
     <h3>{{ data.comments | length }} comments used</h3>
@@ -23,13 +23,19 @@
         <div class="comment" id="{{ comment.id }}">
             <p id="commentText" oninput="inputComment('{{ comment.id }}')">{{ comment.body }}</p>
             <button id="editBtn" onclick="editComment('{{ comment.id }}')">Edit</button>
-            <button id="saveBtn" disabled hidden onclick="saveComment('{{ data.subreddit }}', '{{ data.id }}', '{{ comment.id }}')">Save</button>
+            <button id="confirmBtn" disabled hidden onclick="confirmComment('{{ data.subreddit }}', '{{ data.id }}', '{{ comment.id }}')">Confirm</button>
         </div>
     {% endfor %}
 
     <button>
-        <a href="{{ url_for('approve', subreddit=data.subreddit, thread=data.id) }}">
-            Approve
+        <a href="{{ url_for('queue_upload', subreddit=data.subreddit, thread=data.id) }}">
+            Queue Upload
+        </a>
+    </button>
+
+    <button id="remakeBtn" hidden>
+        <a href="{{ url_for('queue_remake', subreddit=data.subreddit, thread=data.id) }}">
+            Queue Remake
         </a>
     </button>
 

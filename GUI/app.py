@@ -84,8 +84,8 @@ def edit_body(subreddit, thread):
     return redirect("/")
 
 
-@app.route("/edit/comment/<subreddit>/<thread>/<comment>", methods=["GET", "POST"])
-def edit_comment(subreddit, thread, commentId):
+@app.route("/edit/comment/<subreddit>/<thread>/<comment_id>", methods=["GET", "POST"])
+def edit_comment(subreddit, thread, comment_id):
     """Edits comment of video"""
 
     if request.method == "POST":
@@ -98,7 +98,7 @@ def edit_comment(subreddit, thread, commentId):
 
         comments = data["comments"]
         for i, comment in enumerate(comments):
-            if comment["id"] == commentId:
+            if comment["id"] == comment_id:
                 comments[i]["body"] = request.form["comment"]
                 break
 
@@ -114,8 +114,8 @@ def edit_comment(subreddit, thread, commentId):
     return redirect("/")
 
 
-@app.route("/approve/<subreddit>/<thread>")
-def approve(subreddit, thread):
+@app.route("/queue_upload/<subreddit>/<thread>")
+def queue_upload(subreddit, thread):
     """Approves video"""
 
     # Update videos.json
@@ -152,6 +152,31 @@ def approve(subreddit, thread):
     )
     if os.listdir(subreddit_path) == []:
         os.rmdir(subreddit_path)
+
+    return redirect("/")
+
+
+@app.route("/queue_remake/<subreddit>/<thread>")
+def queue_remake(subreddit, thread):
+    """Queues video for remake"""
+
+    # Update videos.json
+    with open("../data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    pending_review = data["pending_review"]
+    pending_remake = data["pending_remake"]
+
+    if subreddit not in pending_remake:
+        pending_remake[subreddit] = []
+    pending_remake[subreddit].append(thread)
+
+    pending_review[subreddit].remove(thread)
+    if pending_review[subreddit] == []:
+        pending_review.pop(subreddit)
+
+    with open("../data/videos.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
 
     return redirect("/")
 

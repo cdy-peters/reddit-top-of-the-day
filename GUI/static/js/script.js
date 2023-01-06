@@ -1,17 +1,20 @@
+const remakeBtn = $("#remakeBtn");
+
+// Edit body
 var originalBody;
 
 const inputBody = () => {
   const body = $("#bodyText");
-  const saveBtn = $("#saveBodyBtn");
+  const confirmBtn = $("#confirmBodyBtn");
 
-  // Disable save button if body is unchanged
-  saveBtn.attr("disabled", body.text() === originalBody);
+  // Disable confirm button if body is unchanged
+  confirmBtn.attr("disabled", body.text() === originalBody);
 };
 
 const editBody = () => {
   const body = $("#bodyText");
   const editBtn = $("#editBodyBtn");
-  const saveBtn = $("#saveBodyBtn");
+  const confirmBtn = $("#confirmBodyBtn");
 
   if (editBtn.text() === "Edit") {
     originalBody = body.text();
@@ -19,22 +22,22 @@ const editBody = () => {
     body.attr("contenteditable", true);
     body.focus();
 
-    saveBtn.attr("hidden", false);
+    confirmBtn.attr("hidden", false);
     editBtn.text("Cancel");
   } else {
     body.text(originalBody);
     body.attr("contenteditable", false);
 
-    saveBtn.attr("hidden", true);
-    saveBtn.attr("disabled", true);
+    confirmBtn.attr("hidden", true);
+    confirmBtn.attr("disabled", true);
     editBtn.text("Edit");
   }
 };
 
-const saveBody = (subreddit, id) => {
+const confirmBody = (subreddit, id) => {
   const body = $("#bodyText");
   const editBtn = $("#editBodyBtn");
-  const saveBtn = $("#saveBodyBtn");
+  const confirmBtn = $("#confirmBodyBtn");
 
   $.ajax({
     url: `/edit/body/${subreddit}/${id}`,
@@ -45,28 +48,30 @@ const saveBody = (subreddit, id) => {
     success: (data) => {
       body.attr("contenteditable", false);
 
-      saveBtn.attr("hidden", true);
-      saveBtn.attr("disabled", true);
+      confirmBtn.attr("hidden", true);
+      confirmBtn.attr("disabled", true);
       editBtn.text("Edit");
+
+      remakeBtn.attr("hidden", false);
     },
   });
 };
 
-// Comment
+// Edit comment
 var originalComment;
 
 const inputComment = (commentId) => {
   const comment = $(`#${commentId} #commentText`);
-  const saveBtn = $(`#${commentId} #saveBtn`);
+  const confirmBtn = $(`#${commentId} #confirmBtn`);
 
-  // Disable save button if comment is unchanged
-  saveBtn.attr("disabled", comment.text() === originalComment);
+  // Disable confirm button if comment is unchanged
+  confirmBtn.attr("disabled", comment.text() === originalComment);
 };
 
 const editComment = (commentId) => {
   const comment = $(`#${commentId} #commentText`);
   const editBtn = $(`#${commentId} #editBtn`);
-  const saveBtn = $(`#${commentId} #saveBtn`);
+  const confirmBtn = $(`#${commentId} #confirmBtn`);
 
   if (editBtn.text() === "Edit") {
     originalComment = comment.text();
@@ -74,23 +79,23 @@ const editComment = (commentId) => {
     comment.attr("contenteditable", true);
     comment.focus();
 
-    saveBtn.attr("hidden", false);
-    saveBtn.attr("disabled", true);
+    confirmBtn.attr("hidden", false);
+    confirmBtn.attr("disabled", true);
     editBtn.text("Cancel");
   } else {
     comment.text(originalComment);
     comment.attr("contenteditable", false);
 
-    saveBtn.attr("hidden", true);
-    saveBtn.attr("disabled", true);
+    confirmBtn.attr("hidden", true);
+    confirmBtn.attr("disabled", true);
     editBtn.text("Edit");
   }
 };
 
-const saveComment = (subreddit, id, commentId) => {
+const confirmComment = (subreddit, id, commentId) => {
   const comment = $(`#${commentId} #commentText`);
   const editBtn = $(`#${commentId} #editBtn`);
-  const saveBtn = $(`#${commentId} #saveBtn`);
+  const confirmBtn = $(`#${commentId} #confirmBtn`);
 
   $.ajax({
     url: `/edit/comment/${subreddit}/${id}/${commentId}`,
@@ -101,9 +106,11 @@ const saveComment = (subreddit, id, commentId) => {
     success: (data) => {
       comment.attr("contenteditable", false);
 
-      saveBtn.attr("hidden", true);
-      saveBtn.attr("disabled", true);
+      confirmBtn.attr("hidden", true);
+      confirmBtn.attr("disabled", true);
       editBtn.text("Edit");
+
+      remakeBtn.attr("hidden", false);
     },
   });
 };
