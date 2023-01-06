@@ -5,8 +5,8 @@ const editedThread = { comments: {} };
 
 const remakeBtnVisibility = () => {
   !("body" in editedThread) && Object.keys(editedThread.comments).length === 0
-    ? remakeBtn.attr("hidden", true)
-    : remakeBtn.attr("hidden", false);
+    ? remakeBtn.attr("disabled", true)
+    : remakeBtn.attr("disabled", false);
 };
 
 // Edit body

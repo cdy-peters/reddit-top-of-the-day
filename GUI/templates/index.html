@@ -1,23 +1,26 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block title %}Top of the Day{% endblock %} {%
+block content %} {% for subreddit in videos["pending_review"] %}
+<h5 class="subreddit">
+  <a href="https://www.reddit.com/r/{{subreddit}}/top/?t=day" target="blank">
+    r/{{subreddit}}</a
+  >
+</h5>
 
-{% block title %}Top of the Day{% endblock %}
+<div class="grid row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+  {% for thread in videos["pending_review"][subreddit] %}
+  <div class="col">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <p class="card-text">{{thread.title}}</p>
 
-{% block content %}
-    {% for subreddit in videos["pending_review"] %}
-        <h2>
-            <a href="https://www.reddit.com/r/{{subreddit}}/top/?t=day" target="blank">
-                r/{{subreddit}}</a>
-        </h2>
-
-        <div class="subreddit">
-            {% for thread in videos["pending_review"][subreddit] %}
-                <div class="video">
-                    <h4>{{thread.title}}</h4>
-
-                    <button type="button" class="btn btn-primary">
-                        <a href="{{ url_for('review', subreddit=subreddit, thread=thread.id) }}">Review Video</a>
-                </div>
-            {% endfor %}
-        </div>
-    {% endfor %}
-{% endblock %}
+        <a
+          class="btn btn-sm btn-outline-secondary"
+          href="{{ url_for('review', subreddit=subreddit, thread=thread.id) }}"
+          >Review Video</a
+        >
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %} {% endblock %}

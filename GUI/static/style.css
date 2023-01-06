@@ -1,16 +1,58 @@
-.video {
-    border: 1px solid #000;
-    width: 300px;
-    height: 300px;
-    display: inline-block;
+p {
+  margin: 0;
+  padding: 0;
 }
 
-button a {
-    color: #000;
-    text-decoration: none;
+h2 a,
+h5 a {
+  color: #000;
+  text-decoration: none;
 }
 
-h2 a, .comment a {
-    color: #000;
-    text-decoration: none;
+h2 a:hover,
+h5 a:hover {
+  color: rgb(45, 45, 45);
+  text-decoration: underline;
+}
+
+/* Index */
+.subreddit {
+  margin-top: 1rem;
+}
+
+/* Review */
+#review-container {
+  display: flex;
+  gap: 20px;
+}
+
+#video-container {
+  margin: 0 auto;
+  text-align: center;
+}
+
+#video {
+  max-width: 400px;
+  max-height: 700px;
+}
+
+.comment {
+  margin-bottom: 1rem;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1200px) {
+  #review-container {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .container {
+    padding: 0;
+  }
+
+  #video {
+    max-width: 100%;
+  }
 }

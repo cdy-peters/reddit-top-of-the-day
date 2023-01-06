@@ -27,6 +27,7 @@ def expand_acronyms(text):
     text = re.sub(r"\bNTA\b", "Not The Asshole", text)
     text = re.sub(r"\bYTA\b", "You're The Asshole", text)
     text = re.sub(r"\bAITA\b", "Am I The Asshole", text)
+    text = re.sub(r"\bWIBTA\b", "Would I be the Asshole", text)
     text = re.sub(r"\bETA\b", "Everyone's The Asshole", text)
     text = re.sub(r"\bNAH\b", "No Assholes Here", text)
     text = re.sub(r"\bTIFU\b", "Today I Fucked Up", text)
