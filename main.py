@@ -33,7 +33,14 @@ def init():
 
     # Stores the subreddit and thread id of produced videos
     if not os.path.exists("data/videos.json"):
-        obj = {"pending": {}, "approved": {}, "deleted": {}, "failed": {}}
+        obj = {
+            "pending_review": {},
+            "pending_remake": {},
+            "pending_upload": {},
+            "uploaded": {},
+            "deleted": {},
+            "failed": {},
+        }
 
         with open("data/videos.json", "w", encoding="utf-8") as f:
             json.dump(obj, f)
@@ -83,7 +90,7 @@ def main():
             json.dump(thread, f)
 
         # Add video to videos.json
-        log_videos(subreddit_name, "pending", thread_id)
+        log_videos(subreddit_name, "pending_review", thread_id)
 
         count += 1
         if count == 1:

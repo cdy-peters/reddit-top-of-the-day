@@ -122,16 +122,16 @@ def approve(subreddit, thread):
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    pending = data["pending"]
-    approved = data["approved"]
+    pending_review = data["pending_review"]
+    approved_upload = data["pending_upload"]
 
-    if subreddit not in approved:
-        approved[subreddit] = []
-    approved[subreddit].append(thread)
+    if subreddit not in approved_upload:
+        approved_upload[subreddit] = []
+    approved_upload[subreddit].append(thread)
 
-    pending[subreddit].remove(thread)
-    if pending[subreddit] == []:
-        pending.pop(subreddit)
+    pending_review[subreddit].remove(thread)
+    if pending_review[subreddit] == []:
+        pending_review.pop(subreddit)
 
     with open("../data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
@@ -164,16 +164,16 @@ def delete(subreddit, thread):
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    pending = data["pending"]
+    pending_review = data["pending_review"]
     deleted = data["deleted"]
 
     if subreddit not in deleted:
         deleted[subreddit] = []
     deleted[subreddit].append(thread)
 
-    pending[subreddit].remove(thread)
-    if pending[subreddit] == []:
-        pending.pop(subreddit)
+    pending_review[subreddit].remove(thread)
+    if pending_review[subreddit] == []:
+        pending_review.pop(subreddit)
 
     with open("../data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
