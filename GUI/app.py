@@ -84,6 +84,36 @@ def edit_body(subreddit, thread):
     return redirect("/")
 
 
+@app.route("/edit/comment/<subreddit>/<thread>/<comment>", methods=["GET", "POST"])
+def edit_comment(subreddit, thread, commentId):
+    """Edits comment of video"""
+
+    if request.method == "POST":
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            data = json.load(f)
+
+        comments = data["comments"]
+        for i, comment in enumerate(comments):
+            if comment["id"] == commentId:
+                comments[i]["body"] = request.form["comment"]
+                break
+
+        with open(
+            f"../assets/subreddits/{subreddit}/{thread}/thread.json",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(data, f, indent=4)
+
+        return "Success"
+
+    return redirect("/")
+
+
 @app.route("/approve/<subreddit>/<thread>")
 def approve(subreddit, thread):
     """Approves video"""
