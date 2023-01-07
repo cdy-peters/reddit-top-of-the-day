@@ -72,6 +72,9 @@ def main():
             log_videos(subreddit_name, "failed", thread_id)
             continue
 
+        # Add length to thread
+        thread["length"] = length
+
         # Get screenshots
         get_screenshots(thread)
 
@@ -104,7 +107,7 @@ if __name__ == "__main__":
 
     init()
 
-    subreddits = [{"name": "AskReddit", "comments": True}]
+    subreddits = [{"name": "AmItheAsshole", "comments": False}]
     for subreddit_dict in subreddits:
         if not os.path.exists(f"assets/subreddits/{subreddit_dict['name']}"):
             os.mkdir(f"assets/subreddits/{subreddit_dict['name']}")

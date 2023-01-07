@@ -17,6 +17,11 @@ block content %} {% for subreddit in videos %}
           {% if thread.over_18 %}
           <p class="badge bg-danger">NSFW</p>
           {% endif %}
+
+          <p class="badge" style="background-color: rgb(255, 86, 0)">
+            {{ thread.upvotes }}
+          </p>
+          <p class="badge bg-primary">{{ thread.length | round | int }}s</p>
         </div>
 
         {% if thread.type == "pending_review" %}

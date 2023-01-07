@@ -1,6 +1,7 @@
 import os
 import json
 import shutil
+from numerize import numerize
 from flask import (
     Flask,
     render_template,
@@ -40,6 +41,8 @@ def index():
                         "id": thread_data["id"],
                         "title": thread_data["title"],
                         "over_18": thread_data["over_18"],
+                        "upvotes": numerize.numerize(thread_data["upvotes"]),
+                        "length": thread_data["length"],
                     }
                 )
 
