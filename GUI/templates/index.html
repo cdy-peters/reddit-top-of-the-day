@@ -1,23 +1,35 @@
 {% extends "layout.html" %} {% block title %}Top of the Day{% endblock %} {%
-block content %} {% for subreddit in videos["pending_review"] %}
+block content %} {% for subreddit in videos %}
 <h5 class="subreddit">
   <a href="https://www.reddit.com/r/{{subreddit}}/top/?t=day" target="blank">
-    r/{{subreddit}}</a
+    r/{{ subreddit }}</a
   >
 </h5>
 
 <div class="grid row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-  {% for thread in videos["pending_review"][subreddit] %}
+  {% for thread in videos[subreddit] %}
   <div class="col">
     <div class="card shadow-sm">
       <div class="card-body">
-        <p class="card-text">{{thread.title}}</p>
+        <p class="card-text">{{ thread.title }}</p>
 
+        {% if thread.type == "pending_review" %}
         <a
           class="btn btn-sm btn-outline-secondary"
           href="{{ url_for('review', subreddit=subreddit, thread=thread.id) }}"
+          style="margin-top: 1rem"
           >Review Video</a
         >
+        {% else %}
+        <button
+          class="btn btn-sm btn-primary"
+          disabled
+          style="margin-top: 1rem"
+        >
+          {% if thread.type == "pending_upload" %} Pending Upload {% elif
+          thread.type == "pending_remake" %} Pending Remake {% endif %}
+        </button>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -17,18 +17,15 @@ app = Flask(__name__)
 def index():
     """Retrieves data of created videos and returns them to page"""
 
-    videos = {
-        "pending_review": {},
-        "pending_remake": {},
-        "pending_upload": {},
-    }
+    video_types = ["pending_review", "pending_remake", "pending_upload"]
+    videos = {}
 
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    for video_type in videos:  # pylint: disable=consider-using-dict-items
+    for video_type in video_types:  # pylint: disable=consider-using-dict-items
         for subreddit in data[video_type]:
-            videos[video_type][subreddit] = []
+            videos[subreddit] = []
             for thread in data[video_type][subreddit]:
                 with open(
                     f"../assets/subreddits/{subreddit}/{thread}/thread.json",
@@ -36,8 +33,13 @@ def index():
                     encoding="utf-8",
                 ) as f:
                     thread_data = json.load(f)
-                videos[video_type][subreddit].append(
-                    {"id": thread_data["id"], "title": thread_data["title"]}
+
+                videos[subreddit].append(
+                    {
+                        "type": video_type,
+                        "id": thread_data["id"],
+                        "title": thread_data["title"],
+                    }
                 )
 
     print(videos)
