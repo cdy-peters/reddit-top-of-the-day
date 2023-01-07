@@ -23,7 +23,7 @@ def index():
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    for video_type in video_types:  # pylint: disable=consider-using-dict-items
+    for video_type in video_types:
         for subreddit in data[video_type]:
             videos[subreddit] = []
             for thread in data[video_type][subreddit]:
@@ -39,10 +39,9 @@ def index():
                         "type": video_type,
                         "id": thread_data["id"],
                         "title": thread_data["title"],
+                        "over_18": thread_data["over_18"],
                     }
                 )
-
-    print(videos)
 
     return render_template("index.html", videos=videos)
 

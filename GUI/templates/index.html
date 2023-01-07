@@ -11,7 +11,13 @@ block content %} {% for subreddit in videos %}
   <div class="col">
     <div class="card shadow-sm">
       <div class="card-body">
-        <p class="card-text">{{ thread.title }}</p>
+        <div>
+          <p class="card-text">{{ thread.title }}</p>
+
+          {% if thread.over_18 %}
+          <p class="badge bg-danger">NSFW</p>
+          {% endif %}
+        </div>
 
         {% if thread.type == "pending_review" %}
         <a

@@ -36,7 +36,13 @@ block content %}
   </div>
 
   <div id="content">
-    <h2>{{ data.title }}</h2>
+    <div style="margin-bottom: 1rem">
+      <h2 style="margin: 0">{{ data.title }}</h2>
+
+      {% if data.over_18 %}
+      <p class="badge bg-danger">NSFW</p>
+      {% endif %}
+    </div>
 
     <a
       class="btn btn-md btn-outline-secondary"
