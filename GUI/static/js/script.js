@@ -7,7 +7,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 });
 
 // Edit video content
-const remakeBtn = $("#remakeBtn");
+const remakeBtn = $("#remake-btn");
 
 const originalThread = { comments: {} };
 const editedThread = { comments: {} };
@@ -19,9 +19,9 @@ const remakeBtnVisibility = () => {
 };
 
 // Edit body
-const body = $("#bodyText");
-const editBodyBtn = $("#editBodyBtn");
-const confirmBodyBtn = $("#confirmBodyBtn");
+const body = $("#body-text");
+const editBodyBtn = $("#edit-body-btn");
+const confirmBodyBtn = $("#confirm-body-btn");
 
 const inputBody = () => {
   // Disable confirm button if body is unchanged
@@ -34,6 +34,7 @@ const editBody = () => {
     if (!("body" in originalThread)) originalThread["body"] = body.text();
 
     body.attr("contenteditable", true);
+    body.addClass("editable-content");
     body.focus();
 
     confirmBodyBtn.attr("hidden", false);
@@ -43,6 +44,7 @@ const editBody = () => {
     body.text(editedThread.body || originalThread.body);
 
     body.attr("contenteditable", false);
+    body.removeClass("editable-content");
 
     confirmBodyBtn.attr("hidden", true);
     confirmBodyBtn.attr("disabled", true);
@@ -57,6 +59,7 @@ const confirmBody = () => {
     : (editedThread.body = body.text());
 
   body.attr("contenteditable", false);
+  body.removeClass("editable-content");
 
   confirmBodyBtn.attr("hidden", true);
   confirmBodyBtn.attr("disabled", true);
@@ -67,8 +70,8 @@ const confirmBody = () => {
 
 // Edit comment
 const inputComment = (commentId) => {
-  const comment = $(`#${commentId} #commentText`);
-  const confirmBtn = $(`#${commentId} #confirmBtn`);
+  const comment = $(`#${commentId} #comment-text`);
+  const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   // Disable confirm button if comment is unchanged
   var bool;
@@ -81,9 +84,9 @@ const inputComment = (commentId) => {
 };
 
 const editComment = (commentId) => {
-  const comment = $(`#${commentId} #commentText`);
-  const editBtn = $(`#${commentId} #editBtn`);
-  const confirmBtn = $(`#${commentId} #confirmBtn`);
+  const comment = $(`#${commentId} #comment-text`);
+  const editBtn = $(`#${commentId} #edit-btn`);
+  const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   if (editBtn.text() === "Edit") {
     // Add comment to originalThread if it doesn't exist
@@ -91,6 +94,7 @@ const editComment = (commentId) => {
       originalThread.comments[commentId] = comment.text();
 
     comment.attr("contenteditable", true);
+    comment.addClass("editable-content");
     comment.focus();
 
     confirmBtn.attr("hidden", false);
@@ -102,6 +106,7 @@ const editComment = (commentId) => {
       : comment.text(originalThread.comments[commentId]);
 
     comment.attr("contenteditable", false);
+    comment.removeClass("editable-content");
 
     confirmBtn.attr("hidden", true);
     confirmBtn.attr("disabled", true);
@@ -110,9 +115,9 @@ const editComment = (commentId) => {
 };
 
 const confirmComment = (commentId) => {
-  const comment = $(`#${commentId} #commentText`);
-  const editBtn = $(`#${commentId} #editBtn`);
-  const confirmBtn = $(`#${commentId} #confirmBtn`);
+  const comment = $(`#${commentId} #comment-text`);
+  const editBtn = $(`#${commentId} #edit-btn`);
+  const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   // Check if changed comment is the same as the original
   comment.text() === originalThread.comments[commentId]
@@ -120,6 +125,7 @@ const confirmComment = (commentId) => {
     : (editedThread.comments[commentId] = comment.text());
 
   comment.attr("contenteditable", false);
+  comment.removeClass("editable-content");
 
   confirmBtn.attr("hidden", true);
   confirmBtn.attr("disabled", true);

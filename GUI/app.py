@@ -102,6 +102,7 @@ def review(subreddit, thread):
         data = json.load(f)
 
     data["created_since"] = get_created_since(data["created_at"])
+    print(data['body'])
 
     return render_template("review.html", thread=data)
 

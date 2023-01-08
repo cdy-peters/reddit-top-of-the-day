@@ -85,40 +85,35 @@ block content %}
     </a>
 
     {% if thread.body %}
-    <p id="bodyText" oninput="inputBody()">{{ thread.body }}</p>
+    <p id="body-text" oninput="inputBody()">{{ thread.body }}</p>
     <button
       class="btn btn-sm btn-outline-secondary"
-      id="editBodyBtn"
+      id="edit-body-btn"
       onclick="editBody()"
-    >
-      Edit
-    </button>
+    >Edit</button>
     <button
       class="btn btn-sm btn-outline-secondary"
-      id="confirmBodyBtn"
+      id="confirm-body-btn"
       disabled
       hidden
       onclick="confirmBody()"
     >
       Confirm
     </button>
+
     {% endif %} {% if thread.comments %}
     <h3>{{ thread.comments | length }} comments</h3>
     {% endif %} {% for comment in thread.comments %}
     <div class="comment" id="{{ comment.id }}">
-      <p id="commentText" oninput="inputComment('{{ comment.id }}')">
-        {{ comment.body }}
-      </p>
+      <p id="comment-text" oninput="inputComment('{{ comment.id }}')">{{ comment.body }}</p>
       <button
         class="btn btn-sm btn-outline-secondary"
-        id="editBtn"
+        id="edit-btn"
         onclick="editComment('{{ comment.id }}')"
-      >
-        Edit
-      </button>
+      >Edit</button>
       <button
         class="btn btn-sm btn-outline-secondary"
-        id="confirmBtn"
+        id="confirm-btn"
         disabled
         hidden
         onclick="confirmComment('{{ comment.id }}')"

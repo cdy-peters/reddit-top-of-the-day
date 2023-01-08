@@ -49,6 +49,16 @@ h5 a:hover {
   max-height: 700px;
 }
 
+#body-text, #comment-text {
+  white-space: pre-wrap;
+  padding: 5px;
+  margin: 5px;
+  overflow-wrap: anywhere;
+}
+.editable-content {
+  outline: -webkit-focus-ring-color auto 1px;
+}
+
 .comment {
   margin-bottom: 1rem;
 }
