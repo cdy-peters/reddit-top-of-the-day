@@ -21,11 +21,16 @@ const remakeBtnVisibility = () => {
 // Edit body
 const body = $("#body-text");
 const editBodyBtn = $("#edit-body-btn");
+const confirmBodyContainer = $("#confirm-body-container");
 const confirmBodyBtn = $("#confirm-body-btn");
 
 const inputBody = () => {
   // Disable confirm button if body is unchanged
-  confirmBodyBtn.attr("disabled", body.text() === editedThread.body);
+  var text;
+
+  editedThread.body ? (text = editedThread.body) : (text = originalThread.body);
+
+  confirmBodyBtn.attr("disabled", body.text() === text);
 };
 
 const editBody = () => {
@@ -37,7 +42,7 @@ const editBody = () => {
     body.addClass("editable-content");
     body.focus();
 
-    confirmBodyBtn.attr("hidden", false);
+    confirmBodyContainer.attr("hidden", false);
     editBodyBtn.text("Cancel");
   } else {
     // Resets body
@@ -46,7 +51,7 @@ const editBody = () => {
     body.attr("contenteditable", false);
     body.removeClass("editable-content");
 
-    confirmBodyBtn.attr("hidden", true);
+    confirmBodyContainer.attr("hidden", true);
     confirmBodyBtn.attr("disabled", true);
     editBodyBtn.text("Edit");
   }
@@ -61,7 +66,7 @@ const confirmBody = () => {
   body.attr("contenteditable", false);
   body.removeClass("editable-content");
 
-  confirmBodyBtn.attr("hidden", true);
+  confirmBodyContainer.attr("hidden", true);
   confirmBodyBtn.attr("disabled", true);
   editBodyBtn.text("Edit");
 
@@ -74,18 +79,19 @@ const inputComment = (commentId) => {
   const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   // Disable confirm button if comment is unchanged
-  var bool;
+  var text;
 
   editedThread.comments[commentId]
-    ? (bool = editedThread.comments[commentId])
-    : (bool = originalThread.comments[commentId]);
+    ? (text = editedThread.comments[commentId])
+    : (text = originalThread.comments[commentId]);
 
-  confirmBtn.attr("disabled", comment.text() === bool);
+  confirmBtn.attr("disabled", comment.text() === text);
 };
 
 const editComment = (commentId) => {
   const comment = $(`#${commentId} #comment-text`);
   const editBtn = $(`#${commentId} #edit-btn`);
+  const confirmContainer = $(`#${commentId} #confirm-container`);
   const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   if (editBtn.text() === "Edit") {
@@ -97,7 +103,7 @@ const editComment = (commentId) => {
     comment.addClass("editable-content");
     comment.focus();
 
-    confirmBtn.attr("hidden", false);
+    confirmContainer.attr("hidden", false);
     editBtn.text("Cancel");
   } else {
     // Resets comment
@@ -108,7 +114,7 @@ const editComment = (commentId) => {
     comment.attr("contenteditable", false);
     comment.removeClass("editable-content");
 
-    confirmBtn.attr("hidden", true);
+    confirmContainer.attr("hidden", true);
     confirmBtn.attr("disabled", true);
     editBtn.text("Edit");
   }
@@ -117,6 +123,7 @@ const editComment = (commentId) => {
 const confirmComment = (commentId) => {
   const comment = $(`#${commentId} #comment-text`);
   const editBtn = $(`#${commentId} #edit-btn`);
+  const confirmContainer = $(`#${commentId} #confirm-container`);
   const confirmBtn = $(`#${commentId} #confirm-btn`);
 
   // Check if changed comment is the same as the original
@@ -127,7 +134,7 @@ const confirmComment = (commentId) => {
   comment.attr("contenteditable", false);
   comment.removeClass("editable-content");
 
-  confirmBtn.attr("hidden", true);
+  confirmContainer.attr("hidden", true);
   confirmBtn.attr("disabled", true);
   editBtn.text("Edit");
 

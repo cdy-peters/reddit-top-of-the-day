@@ -79,30 +79,32 @@ block content %}
       class="btn btn-md btn-outline-secondary"
       href="{{ thread.url }}"
       target="blank"
-      style="margin-bottom: 1rem"
     >
       View on Reddit
     </a>
 
     {% if thread.body %}
-    <p id="body-text" oninput="inputBody()">{{ thread.body }}</p>
+    <p id="body-text" oninput="inputBody()" style="margin-top: 1rem">{{ thread.body }}</p>
     <button
       class="btn btn-sm btn-outline-secondary"
       id="edit-body-btn"
       onclick="editBody()"
     >Edit</button>
-    <button
-      class="btn btn-sm btn-outline-secondary"
-      id="confirm-body-btn"
-      disabled
-      hidden
-      onclick="confirmBody()"
-    >
-      Confirm
-    </button>
+    <span id="confirm-body-container" hidden>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        id="confirm-body-btn"
+        disabled
+        onclick="confirmBody()"
+      >
+        Confirm
+      </button>
+      <br>
+      <small class="text-muted">Changes do not save until video is queued to be remade</small>
+    </span>
 
     {% endif %} {% if thread.comments %}
-    <h3>{{ thread.comments | length }} comments</h3>
+    <h3 style="margin-top: 1rem">{{ thread.comments | length }} comments</h3>
     {% endif %} {% for comment in thread.comments %}
     <div class="comment" id="{{ comment.id }}">
       <p id="comment-text" oninput="inputComment('{{ comment.id }}')">{{ comment.body }}</p>
@@ -111,15 +113,18 @@ block content %}
         id="edit-btn"
         onclick="editComment('{{ comment.id }}')"
       >Edit</button>
-      <button
-        class="btn btn-sm btn-outline-secondary"
-        id="confirm-btn"
-        disabled
-        hidden
-        onclick="confirmComment('{{ comment.id }}')"
-      >
-        Confirm
-      </button>
+      <span id="confirm-container" hidden>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          id="confirm-btn"
+          disabled
+          onclick="confirmComment('{{ comment.id }}')"
+        >
+          Confirm
+        </button>
+        <br>
+        <small class="text-muted">Changes do not save until video is queued to be remade</small>
+      </span>
     </div>
     {% endfor %}
   </div>
