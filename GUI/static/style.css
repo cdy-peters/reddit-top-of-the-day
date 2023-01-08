@@ -20,6 +20,14 @@ h5 a:hover {
   margin-top: 1rem;
 }
 
+#card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
 /* Review */
 #review-container {
   display: flex;

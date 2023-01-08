@@ -3,6 +3,8 @@
 import os
 import json
 import praw
+import time
+import math
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
@@ -83,6 +85,9 @@ def main():
 
         # Get video
         get_video(thread)
+
+        # Add created_at to thread
+        thread["created_at"] = math.floor(time.time())
 
         # Add thread object to thread.json
         path = f"assets/subreddits/{subreddit_name}/{thread_id}"

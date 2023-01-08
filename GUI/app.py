@@ -1,6 +1,8 @@
 import os
 import json
 import shutil
+import time
+import math
 from numerize import numerize
 from flask import (
     Flask,
@@ -12,6 +14,44 @@ from flask import (
 )
 
 app = Flask(__name__)
+
+
+def get_created_since(created_at):
+    """Returns how long ago the video was created"""
+
+    seconds = math.floor(time.time()) - created_at
+    minutes = math.floor(seconds / 60)
+    hours = math.floor(minutes / 60)
+    days = math.floor(hours / 24)
+    weeks = math.floor(days / 7)
+    months = math.floor(days / 30)
+    years = math.floor(days / 365)
+
+    if seconds < 60:
+        val = seconds
+        unit = "second"
+    elif minutes < 60:
+        val = minutes
+        unit = "minute"
+    elif hours < 24:
+        val = hours
+        unit = "hour"
+    elif days < 7:
+        val = days
+        unit = "day"
+    elif weeks < 4:
+        val = weeks
+        unit = "week"
+    elif months < 12:
+        val = months
+        unit = "month"
+    else:
+        val = years
+        unit = "year"
+
+    if val == 1:
+        return f"Created {val} {unit} ago"
+    return f"Created {val} {unit}s ago"
 
 
 @app.route("/")
@@ -43,6 +83,7 @@ def index():
                         "over_18": thread_data["over_18"],
                         "upvotes": numerize.numerize(thread_data["upvotes"]),
                         "length": thread_data["length"],
+                        "created_since": get_created_since(thread_data["created_at"]),
                     }
                 )
 
