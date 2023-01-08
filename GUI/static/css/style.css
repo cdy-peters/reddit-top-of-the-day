@@ -28,6 +28,11 @@ h5 a:hover {
   margin-top: 1rem;
 }
 
+.video-tag {
+  display: inline-flex;
+  gap: 4px;
+}
+
 /* Review */
 #review-container {
   display: flex;

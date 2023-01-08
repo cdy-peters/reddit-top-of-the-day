@@ -18,10 +18,33 @@ block content %} {% for subreddit in videos %}
           <p class="badge bg-danger">NSFW</p>
           {% endif %}
 
-          <p class="badge" style="background-color: rgb(255, 86, 0)">
+          <p
+            class="video-tag badge"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Upvotes"
+            style="background-color: rgb(255, 86, 0)"
+          >
+            <object
+              data="{{ url_for('static', filename='svg/upvote.svg') }}"
+              height="12"
+              width="12"
+            ></object>
             {{ thread.upvotes }}
           </p>
-          <p class="badge bg-primary">{{ thread.length | round | int }}s</p>
+          <p
+            class="video-tag badge bg-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Length"
+          >
+            <object
+              data="{{ url_for('static', filename='svg/length.svg') }}"
+              height="12"
+              width="12"
+            ></object>
+            {{ thread.length | round | int }}s
+          </p>
         </div>
 
         <div id="card-bottom">
