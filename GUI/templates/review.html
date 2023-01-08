@@ -1,10 +1,10 @@
-{% extends "layout.html" %} {% block title %}{{ data.title }}{% endblock %} {%
+{% extends "layout.html" %} {% block title %}{{ thread.title }}{% endblock %} {%
 block content %}
 <div id="review-container">
   <div id="video-container">
     <video id="video" controls>
       <source
-        src="{{ url_for('video', subreddit=data.subreddit, thread=data.id) }}"
+        src="{{ url_for('video', subreddit=thread.subreddit, thread=thread.id) }}"
         type="video/mp4"
       />
     </video>
@@ -12,7 +12,7 @@ block content %}
     <div>
       <a
         class="btn btn-md btn-outline-secondary"
-        href="{{ url_for('queue_upload', subreddit=data.subreddit, thread=data.id) }}"
+        href="{{ url_for('queue_upload', subreddit=thread.subreddit, thread=thread.id) }}"
       >
         Queue Upload
       </a>
@@ -21,14 +21,14 @@ block content %}
         class="btn btn-md btn-outline-secondary"
         id="remakeBtn"
         disabled
-        onclick="queueRemake('{{ data.subreddit }}', '{{ data.id }}')"
+        onclick="queueRemake('{{ thread.subreddit }}', '{{ thread.id }}')"
       >
         Queue Remake
       </button>
 
       <a
         class="btn btn-md btn-outline-secondary"
-        href="{{ url_for('delete', subreddit=data.subreddit, thread=data.id) }}"
+        href="{{ url_for('delete', subreddit=thread.subreddit, thread=thread.id) }}"
       >
         Delete
       </a>
@@ -37,24 +37,55 @@ block content %}
 
   <div id="content">
     <div style="margin-bottom: 1rem">
-      <h2 style="margin: 0">{{ data.title }}</h2>
+      <h2 style="margin: 0">{{ thread.title }}</h2>
 
-      {% if data.over_18 %}
+      {% if thread.over_18 %}
       <p class="badge bg-danger">NSFW</p>
       {% endif %}
+      <p
+        class="video-tag badge"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="Upvotes"
+        style="background-color: rgb(255, 86, 0)"
+      >
+        <object
+          data="{{ url_for('static', filename='svg/upvote.svg') }}"
+          height="12"
+          width="12"
+        ></object>
+        {{ thread.upvotes }}
+      </p>
+      <p
+        class="video-tag badge bg-primary"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="Length"
+      >
+        <object
+          data="{{ url_for('static', filename='svg/length.svg') }}"
+          height="12"
+          width="12"
+        ></object>
+        {{ thread.length | round | int }}s
+      </p>
+      <br />
+      <small class="text-muted" style="text-align: end"
+        >{{ thread.created_since }}</small
+      >
     </div>
 
     <a
       class="btn btn-md btn-outline-secondary"
-      href="{{ data.url }}"
+      href="{{ thread.url }}"
       target="blank"
       style="margin-bottom: 1rem"
     >
       View on Reddit
     </a>
 
-    {% if data.body %}
-    <p id="bodyText" oninput="inputBody()">{{ data.body }}</p>
+    {% if thread.body %}
+    <p id="bodyText" oninput="inputBody()">{{ thread.body }}</p>
     <button
       class="btn btn-sm btn-outline-secondary"
       id="editBodyBtn"
@@ -71,9 +102,9 @@ block content %}
     >
       Confirm
     </button>
-    {% endif %} {% if data.comments %}
-    <h3>{{ data.comments | length }} comments</h3>
-    {% endif %} {% for comment in data.comments %}
+    {% endif %} {% if thread.comments %}
+    <h3>{{ thread.comments | length }} comments</h3>
+    {% endif %} {% for comment in thread.comments %}
     <div class="comment" id="{{ comment.id }}">
       <p id="commentText" oninput="inputComment('{{ comment.id }}')">
         {{ comment.body }}

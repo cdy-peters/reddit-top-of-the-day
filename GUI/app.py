@@ -83,7 +83,7 @@ def index():
                         "id": thread_data["id"],
                         "title": thread_data["title"],
                         "over_18": thread_data["over_18"],
-                        "upvotes": numerize.numerize(thread_data["upvotes"]),
+                        "upvotes": thread_data["upvotes"],
                         "length": thread_data["length"],
                         "created_since": get_created_since(thread_data["created_at"]),
                     }
@@ -101,7 +101,9 @@ def review(subreddit, thread):
     ) as f:
         data = json.load(f)
 
-    return render_template("review.html", data=data)
+    data["created_since"] = get_created_since(data["created_at"])
+
+    return render_template("review.html", thread=data)
 
 
 @app.route("/video/<subreddit>/<thread>")

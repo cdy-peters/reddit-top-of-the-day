@@ -3,6 +3,7 @@
 import os
 from datetime import datetime
 from praw.models import MoreComments
+from numerize import numerize
 
 from utils.log_videos import video_exists
 from utils.sanitize_text import clean_text
@@ -57,7 +58,7 @@ def get_thread(thread):
         "id": thread.id,
         "url": f"https://www.reddit.com{thread.permalink}",
         "over_18": thread.over_18,
-        "upvotes": thread.ups,
+        "upvotes": numerize.numerize(thread.ups),
         "title": thread.title,
         "body": thread.selftext,
         "comments": get_comments(thread),
