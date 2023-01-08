@@ -66,7 +66,9 @@ def index():
 
     for video_type in video_types:
         for subreddit in data[video_type]:
-            videos[subreddit] = []
+            if subreddit not in videos:
+                videos[subreddit] = []
+
             for thread in data[video_type][subreddit]:
                 with open(
                     f"../assets/subreddits/{subreddit}/{thread}/thread.json",
