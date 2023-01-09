@@ -1,3 +1,49 @@
+// Modal
+const modal = $("#dialog-modal")[0];
+
+const openModal = (dialog, subreddit = null, thread = null) => {
+  const modalTitle = modal.querySelector(".modal-title");
+  const modalConfirm = modal.querySelector("#confirm-btn");
+
+  switch (dialog) {
+    case "upload":
+      $(modalTitle).text("Are you sure you want to upload this video?");
+
+      $(modalConfirm).text("Upload");
+      $(modalConfirm).removeAttr("onclick");
+      $(modalConfirm).attr("href", `/queue_upload/${subreddit}/${thread}`);
+      break;
+    case "remake":
+      $(modalTitle).text("Are you sure you want to remake this video?");
+
+      $(modalConfirm).text("Remake");
+      $(modalConfirm).removeAttr("href");
+      $(modalConfirm).attr(
+        "onclick",
+        `queueRemake("${subreddit}", "${thread}")`
+      );
+      break;
+    case "delete":
+      $(modalTitle).text("Are you sure you want to delete this video?");
+
+      $(modalConfirm).text("Delete");
+      $(modalConfirm).removeAttr("onclick");
+      $(modalConfirm).attr(
+        "href",
+        "{{ url_for('delete', subreddit=thread.subreddit, thread=thread.id) }}"
+      );
+      break;
+  }
+
+  modal.style.display = "block";
+};
+const closeModal = () => (modal.style.display = "none");
+
+// Close modal when the user clicks outside the modal
+window.onclick = (event) => {
+  if (event.target == modal) modal.style.display = "none";
+};
+
 // Tooltips
 var tooltipTriggerList = [].slice.call(
   document.querySelectorAll('[data-bs-toggle="tooltip"]')

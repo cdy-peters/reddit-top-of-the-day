@@ -12,7 +12,7 @@ block content %}
     <div>
       <a
         class="btn btn-md btn-outline-secondary"
-        href="{{ url_for('queue_upload', subreddit=thread.subreddit, thread=thread.id) }}"
+        onclick="openModal('upload', '{{ thread.subreddit }}', '{{ thread.id }}')"
       >
         Queue Upload
       </a>
@@ -21,14 +21,14 @@ block content %}
         class="btn btn-md btn-outline-secondary"
         id="remakeBtn"
         disabled
-        onclick="queueRemake('{{ thread.subreddit }}', '{{ thread.id }}')"
+        onclick="openModal('remake', '{{ thread.subreddit }}', '{{ thread.id }}')"
       >
         Queue Remake
       </button>
 
       <a
         class="btn btn-md btn-outline-secondary"
-        href="{{ url_for('delete', subreddit=thread.subreddit, thread=thread.id) }}"
+        onclick="openModal('delete')"
       >
         Delete
       </a>
@@ -127,6 +127,30 @@ block content %}
       </span>
     </div>
     {% endfor %}
+  </div>
+</div>
+
+<!-- The modal -->
+<div id="dialog-modal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <h4 class="modal-title" id="myModalLabel">default</h4>
+
+    <div class="modal-btns">
+      <a
+          class="btn btn-md btn-outline-danger"
+          id="confirm-btn"
+          href="default"
+        >
+          Default
+      </a>
+  
+      <a
+          class="btn btn-md btn-outline-secondary"
+          id="cancel-btn"
+          onclick="closeModal()"
+      >Cancel</a>        
+    </div>
   </div>
 </div>
 {% endblock %}
