@@ -1,4 +1,8 @@
+Flask==2.2.2
 moviepy==1.0.3
+numerize==0.12
+playwright==1.29.1
 praw==7.6.0
 python-dotenv==0.21.0
 requests==2.28.1
+-e .

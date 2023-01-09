@@ -3,7 +3,6 @@ import json
 import shutil
 import time
 import math
-from numerize import numerize
 from flask import (
     Flask,
     render_template,
@@ -12,6 +11,8 @@ from flask import (
     request,
     jsonify,
 )
+
+from src.utils.log_videos import move_video
 
 app = Flask(__name__)
 
@@ -102,7 +103,6 @@ def review(subreddit, thread):
         data = json.load(f)
 
     data["created_since"] = get_created_since(data["created_at"])
-    print(data['body'])
 
     return render_template("review.html", thread=data)
 
@@ -121,22 +121,7 @@ def queue_upload(subreddit, thread):
     """Approves video for upload"""
 
     # Update videos.json
-    with open("../data/videos.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    pending_review = data["pending_review"]
-    pending_upload = data["pending_upload"]
-
-    if subreddit not in pending_upload:
-        pending_upload[subreddit] = []
-    pending_upload[subreddit].append(thread)
-
-    pending_review[subreddit].remove(thread)
-    if pending_review[subreddit] == []:
-        pending_review.pop(subreddit)
-
-    with open("../data/videos.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+    move_video(subreddit, thread, "pending_review", "pending_upload")
 
     return redirect("/")
 
@@ -175,22 +160,7 @@ def queue_remake(subreddit, thread):
             json.dump(data, f, indent=4)
 
         # Update videos.json
-        with open("../data/videos.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        pending_review = data["pending_review"]
-        pending_remake = data["pending_remake"]
-
-        if subreddit not in pending_remake:
-            pending_remake[subreddit] = []
-        pending_remake[subreddit].append(thread)
-
-        pending_review[subreddit].remove(thread)
-        if pending_review[subreddit] == []:
-            pending_review.pop(subreddit)
-
-        with open("../data/videos.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4)
+        move_video(subreddit, thread, "pending_review", "pending_remake")
 
         return jsonify({"success": True})
 
@@ -202,22 +172,7 @@ def delete(subreddit, thread):
     """Deletes video"""
 
     # Updates videos.json
-    with open("../data/videos.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    pending_review = data["pending_review"]
-    deleted = data["deleted"]
-
-    if subreddit not in deleted:
-        deleted[subreddit] = []
-    deleted[subreddit].append(thread)
-
-    pending_review[subreddit].remove(thread)
-    if pending_review[subreddit] == []:
-        pending_review.pop(subreddit)
-
-    with open("../data/videos.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+    move_video(subreddit, thread, "pending_review", "deleted")
 
     # Delete video
     subreddit_path = f"../assets/subreddits/{subreddit}"

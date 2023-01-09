@@ -28,10 +28,7 @@ const openModal = (dialog, subreddit = null, thread = null) => {
 
       $(modalConfirm).text("Delete");
       $(modalConfirm).removeAttr("onclick");
-      $(modalConfirm).attr(
-        "href",
-        "{{ url_for('delete', subreddit=thread.subreddit, thread=thread.id) }}"
-      );
+      $(modalConfirm).attr("href", `/delete/${subreddit}/${thread}`);
       break;
   }
 
