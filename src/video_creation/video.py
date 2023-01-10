@@ -17,6 +17,7 @@ from .tts import TTS
 from .screenshots import get_screenshots
 from .background import get_subclip
 
+
 def get_video(thread):
     """Gets the video"""
 
@@ -66,7 +67,7 @@ def create_video(thread):
 
     if thread["body"]:
         audio.append(AudioFileClip(f"{path}/audio/body.mp3"))
-        
+
     for comment in thread["comments"]:
         audio.append(AudioFileClip(f"{path}/audio/{comment['id']}.mp3"))
 
@@ -79,7 +80,7 @@ def create_video(thread):
     screenshots.append(
         ImageClip(f"{path}/screenshots/title.png")
         .set_duration(audio[0].duration)
-        .resize(width=980)
+        .resize(width=1030)
         .set_opacity(0.9)
         .crossfadein(0.2)
         .crossfadeout(0.2)
@@ -89,7 +90,7 @@ def create_video(thread):
         screenshots.append(
             ImageClip(f"{path}/screenshots/body.png")
             .set_duration(audio[1].duration)
-            .resize(width=980)
+            .resize(width=1030)
             .set_opacity(0.9)
             .crossfadein(0.2)
             .crossfadeout(0.2)
@@ -104,7 +105,7 @@ def create_video(thread):
         screenshots.append(
             ImageClip(f"{path}/screenshots/{comment['id']}.png")
             .set_duration(audio[i].duration)
-            .resize(width=980)
+            .resize(width=1030)
             .set_opacity(0.9)
             .crossfadein(0.2)
             .crossfadeout(0.2)

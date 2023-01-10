@@ -15,10 +15,11 @@ def log_videos(subreddit, key, thread_id):
     with open("data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-def move_video(subreddit, thread ,current, new):
+
+def move_video(subreddit, thread, current, new):
     """Move video to new thread"""
 
-   # Update videos.json
+    # Update videos.json
     with open("../data/videos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -34,6 +35,23 @@ def move_video(subreddit, thread ,current, new):
         pending_current.pop(subreddit)
 
     with open("../data/videos.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def remove_video(subreddit, thread):
+    """Remove video from videos.json"""
+
+    with open("data/videos.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    for key in data:
+        if subreddit in data[key]:
+            if thread in data[key][subreddit]:
+                data[key][subreddit].remove(thread)
+                if data[key][subreddit] == []:
+                    data[key].pop(subreddit)
+
+    with open("data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
 
