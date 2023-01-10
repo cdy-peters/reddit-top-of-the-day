@@ -42,10 +42,10 @@ def check_text(text):
 
     text = expand_acronyms(text)
 
-    if len(text) > 550:
-        split_text = [
-            i.group().strip() for i in re.finditer(r" *(((.|\n){0,550})(\.|.$))", text)
-        ]
-        return split_text
+    return text
 
-    return [text]
+
+def split_text(text):
+    """Splits text into 550 character parts"""
+
+    return [i.group().strip() for i in re.finditer(r" *(((.|\n){0,550})(\.|.$))", text)]

@@ -2,11 +2,10 @@
 
 import os
 import shutil
-import time
-import requests
 from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
 
-from utils.sanitize_text import check_text
+from utils.sanitize_text import check_text, split_text
+from utils.voices import streamlabs
 
 
 class TTS:
@@ -16,6 +15,7 @@ class TTS:
         self.subreddit = subreddit
         self.thread_id = thread_id
         self.length = 0
+        self.last_clip_length = 0
 
     def tts_handler(self, filename, text):
         """Handles the text to speech"""
@@ -24,58 +24,30 @@ class TTS:
         file_path = f"{dir_path}/{filename}"
 
         text = check_text(text)
-        audio = []
 
-        for i in text:
-            url = "https://streamlabs.com/polly/speak"
-            payload = {
-                "voice": "Matthew",
-                "text": i,
-                "service": "polly",
-            }
-
-            try:
-                response = requests.post(url, data=payload, timeout=10)
-            except requests.exceptions.RequestException as err:
-                print(err)
-                return
-
-            while response.status_code == 429:
-                time.sleep(int(response.headers["retry-after"]))
-                try:
-                    response = requests.post(url, data=payload, timeout=10)
-                except requests.exceptions.RequestException as err:
-                    print(err)
-                    return
-
-            audio.append(response.json()["speak_url"])
-
-        if len(audio) > 1:
+        if len(text) <= 550:
+            streamlabs(text, file_path)
+        else:
             path = f"{dir_path}/temp"
-
             os.mkdir(path)
 
-            for i, url in enumerate(audio):
-                with open(f"{path}/{i}.mp3", "wb") as f:
-                    f.write(requests.get(url, timeout=10).content)
+            text = split_text(text)
+            audio = []
+            for i, t in enumerate(text):
+                streamlabs(t, f"{path}/{i}.mp3")
+                audio.append(AudioFileClip(f"{path}/{i}.mp3"))
 
-            audio_clips = []
-            for i in range(len(audio)):
-                audio_clips.append(AudioFileClip(f"{path}/{i}.mp3"))
-
-            CompositeAudioClip([concatenate_audioclips(audio_clips)]).write_audiofile(
+            CompositeAudioClip([concatenate_audioclips(audio)]).write_audiofile(
                 file_path, fps=44100
             )
 
             shutil.rmtree(path)
-        else:
-            with open(file_path, "wb") as f:
-                f.write(requests.get(audio[0], timeout=10).content)
 
         # Add length of clip to total length
         clip = AudioFileClip(file_path)
         clip.close()
         self.length += clip.duration
+        self.last_clip_length = clip.duration
 
     def get_audio(self, thread, comments):
         """Gets the audio of the thread"""
@@ -104,14 +76,12 @@ class TTS:
                 self.tts_handler(f'{comment["id"]}.mp3', comment["body"])
 
                 if self.length >= 60:  # If new comment exceeds max length of video
+                    # Delete last clip
                     path = f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
+                    os.remove(path)
 
                     # Remove length of last clip from total length
-                    clip = AudioFileClip(path)
-                    clip.close()
-                    self.length -= clip.duration
-
-                    os.remove(path)
+                    self.length -= self.last_clip_length
 
                     thread["comments"] = comments
                     break
