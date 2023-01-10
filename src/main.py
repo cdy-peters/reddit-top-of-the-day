@@ -3,14 +3,9 @@
 import os
 import json
 import praw
-import time
-import math
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
-from video_creation.tts import TTS
-from video_creation.screenshots import get_screenshots
-from video_creation.background import get_subclip
 from video_creation.video import get_video
 
 from utils.log_videos import log_videos
@@ -53,7 +48,7 @@ def init():
 def main():
     """Main function"""
 
-    # Get the thread
+    # Get threads from the subreddit
     threads = subreddit.top(time_filter="day", limit=25)
 
     count = 0
@@ -62,40 +57,16 @@ def main():
         subreddit_name = thread.subreddit.display_name
         thread_id = thread.id
 
-        thread = get_thread(thread)
+        # Get content of thread
+        thread = get_thread(thread, subreddit_dict["comments"])
         if thread is None:
             log_videos(subreddit_name, "failed", thread_id)
             continue
 
-        # Get audio clips
-        tts = TTS(subreddit_name, thread_id)
-        length = tts.get_audio(thread, subreddit_dict["comments"])
-        if length is None:  # The the audio is too long
+        # Create video of thread
+        if get_video(thread) is None:
             log_videos(subreddit_name, "failed", thread_id)
             continue
-
-        # Add length to thread
-        thread["length"] = length
-
-        # Get screenshots
-        get_screenshots(thread)
-
-        # Get background
-        get_subclip(subreddit_name, thread_id, length)
-
-        # Get video
-        get_video(thread)
-
-        # Add created_at to thread
-        thread["created_at"] = math.floor(time.time())
-
-        # Add thread object to thread.json
-        path = f"assets/subreddits/{subreddit_name}/{thread_id}"
-        with open(f"{path}/thread.json", "w", encoding="utf-8") as f:
-            json.dump(thread, f)
-
-        # Add video to videos.json
-        log_videos(subreddit_name, "pending_review", thread_id)
 
         count += 1
         if count == 1:
@@ -112,7 +83,7 @@ if __name__ == "__main__":
 
     init()
 
-    subreddits = [{"name": "AmItheAsshole", "comments": False}]
+    subreddits = [{"name": "AskReddit", "comments": True}]
     for subreddit_dict in subreddits:
         if not os.path.exists(f"assets/subreddits/{subreddit_dict['name']}"):
             os.mkdir(f"assets/subreddits/{subreddit_dict['name']}")

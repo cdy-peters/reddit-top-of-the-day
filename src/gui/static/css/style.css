@@ -49,6 +49,10 @@ h5 a:hover {
   max-height: 700px;
 }
 
+#content {
+  margin: 0 10px;
+}
+
 #body-text,
 #comment-text {
   white-space: pre-wrap;

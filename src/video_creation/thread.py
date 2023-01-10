@@ -31,7 +31,7 @@ def get_comments(thread):
     return comments
 
 
-def get_thread(thread):
+def get_thread(thread, comments):
     """Performs checks on thread and gets the content of the thread"""
 
     # Check if the thread has been done
@@ -53,6 +53,12 @@ def get_thread(thread):
     if (now - created).days > 1:
         return None
 
+    # Get comments
+    if comments:
+        comments = get_comments(thread)
+    else:
+        comments = []
+
     content = {
         "subreddit": thread.subreddit.display_name,
         "id": thread.id,
@@ -61,7 +67,7 @@ def get_thread(thread):
         "upvotes": numerize.numerize(thread.ups),
         "title": thread.title,
         "body": thread.selftext,
-        "comments": get_comments(thread),
+        "comments": comments,
     }
 
     os.mkdir(f"assets/subreddits/{content['subreddit']}/{content['id']}")
