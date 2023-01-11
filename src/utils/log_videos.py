@@ -10,7 +10,8 @@ def log_videos(subreddit, key, thread_id):
     if subreddit not in data[key]:
         data[key][subreddit] = []
 
-    data[key][subreddit].append(thread_id)
+    if thread_id not in data[key][subreddit]:
+        data[key][subreddit].append(thread_id)
 
     with open("data/videos.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)

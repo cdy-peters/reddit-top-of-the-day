@@ -36,7 +36,6 @@ def get_thread(thread, comments):
 
     # Check if the thread has been done
     if video_exists(thread.subreddit.display_name, thread.id):
-        print("Video already exists")
         return None
 
     # Check if the thread has a sufficient amount of comments
