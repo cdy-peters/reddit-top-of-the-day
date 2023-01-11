@@ -64,6 +64,7 @@ def get_thread(thread, comments):
         "url": f"https://www.reddit.com{thread.permalink}",
         "over_18": thread.over_18,
         "upvotes": numerize.numerize(thread.ups),
+        "author": thread.author.name,
         "title": thread.title,
         "body": thread.selftext,
         "comments": comments,
