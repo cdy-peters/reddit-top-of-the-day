@@ -9,11 +9,11 @@ def clean_text(text):
     text = re.sub(regex_urls, " ", text)
 
     # Remove special characters
-    regex_expr = r"\s['|’]|['|’]\s|[\^_~@!;#:\-–—%“”‘\"%\*\/{}\[\]\(\)\\|<>=+]"
+    regex_expr = r"\s['|’]|['|’]\s|[\^_~@;#:\-–—%“”‘\"\*\/{}\[\]\(\)\\|<>=+]"
     text = re.sub(regex_expr, " ", text)
 
     # Replace symbols with words
-    text = text.replace("+", "plus").replace("&", "and")
+    text = text.replace("+", "plus").replace("&", "and").replace("%", 'percent')
 
     # Trim whitespace
     text = re.sub(r"\s+", " ", text)
