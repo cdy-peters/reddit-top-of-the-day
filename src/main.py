@@ -7,7 +7,7 @@ import praw
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
-from video_creation.video import get_video
+from video_creation.video import get_video, remake_video
 
 from utils.log_videos import log_videos, remove_video
 
@@ -105,11 +105,16 @@ def remake_videos():
             ) as f:
                 data = json.load(f)
 
-            remove_video(subreddit, thread)
-            shutil.rmtree(f"assets/subreddits/{subreddit}/{thread}")
-            os.mkdir(f"assets/subreddits/{subreddit}/{thread}")
+            path = f"assets/subreddits/{subreddit}/{thread}"
 
-            get_video(data)
+            shutil.rmtree(f"{path}/audio")
+            os.remove(f"{path}/background.mp4")
+            os.remove(f"{path}/video.mp4")
+            os.remove(f"{path}/thread.json")
+
+            remove_video(subreddit, thread)
+
+            remake_video(data)
 
 
 if __name__ == "__main__":

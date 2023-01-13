@@ -53,6 +53,31 @@ def get_video(thread):
     return thread
 
 
+def remake_video(thread):
+    """Remakes the video"""
+
+    # Get audio clips
+    tts = TTS(thread["subreddit"], thread["id"])
+    length = tts.get_audio(thread)
+
+    # Get background
+    get_subclip(thread["subreddit"], thread["id"], length)
+
+    # Get video
+    create_video(thread)
+
+    # Add created_at to thread
+    thread["created_at"] = math.floor(time.time())
+
+    # Add thread object to thread.json
+    path = f"assets/subreddits/{thread['subreddit']}/{thread['id']}"
+    with open(f"{path}/thread.json", "w", encoding="utf-8") as f:
+        json.dump(thread, f)
+
+    # Add video to videos.json
+    log_videos(thread["subreddit"], "pending_review", thread["id"])
+
+
 def create_video(thread):
     """Creates the video"""
 
