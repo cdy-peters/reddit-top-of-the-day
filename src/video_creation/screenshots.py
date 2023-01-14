@@ -23,6 +23,8 @@ def login(page):
         "networkidle"
     )  # ? Wait for some element to be present instead instead of waiting for networkidle (i.e. expect())
 
+    page.locator("button[aria-label='Close']").click()
+
     page.context.storage_state(path="data/state.json")
 
     return page
@@ -51,14 +53,6 @@ def get_screenshots(thread):
 
         page.set_viewport_size(ViewportSize(width=1920, height=1080))
 
-        # If the thread is NSFW # * Shouldn't be needed anymore
-        # if page.locator('[data-testid="content-gate"]').is_visible():
-        #     page.locator('[data-testid="content-gate"] button').click()
-        #     page.wait_for_load_state()
-
-        #     if page.locator('[data-click-id="text"] button').is_visible():
-        #         page.locator('[data-click-id="text"] button').click()
-
         page.locator(
             '[data-test-id="post-content"] > [data-adclicklocation="title"]'
         ).screenshot(path=f"{path}/title.png")
@@ -77,3 +71,5 @@ def get_screenshots(thread):
             page.locator(f'#t1_{comment["id"]}').screenshot(
                 path=f"{path}/{comment['id']}.png"
             )
+
+        browser.close()
