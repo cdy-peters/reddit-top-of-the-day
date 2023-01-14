@@ -2,14 +2,13 @@
 
 import os
 import json
-import shutil
 import praw
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
-from video_creation.video import get_video, remake_video
+from video_creation.get_video import get_video
 
-from utils.log_videos import log_videos, remove_video
+from utils.log_videos import log_videos
 
 load_dotenv()
 
@@ -88,41 +87,6 @@ def get_videos():
                 break
 
 
-def remake_videos():
-    """Remakes any videos that are pending remake"""
-
-    with open("data/videos.json", "r", encoding="utf-8") as f:
-        videos = json.load(f)
-
-    pending_remake = videos["pending_remake"]
-
-    for subreddit in pending_remake:
-        for thread in pending_remake[subreddit]:
-            with open(
-                f"assets/subreddits/{subreddit}/{thread}/thread.json",
-                "r",
-                encoding="utf-8",
-            ) as f:
-                data = json.load(f)
-
-            path = f"assets/subreddits/{subreddit}/{thread}"
-
-            shutil.rmtree(f"{path}/audio")
-            os.remove(f"{path}/background.mp4")
-            os.remove(f"{path}/video.mp4")
-            os.remove(f"{path}/thread.json")
-
-            remove_video(subreddit, thread)
-
-            remake_video(data)
-
-
 if __name__ == "__main__":
-    option = input("Make videos (1), remake videos (2): ")
-    option.lower()
-
-    if option in ("1", "make videos"):
-        subreddits = [{"name": "AskReddit", "comments": True}]
-        get_videos()
-    elif option in ("2", "remake videos"):
-        remake_videos()
+    subreddits = [{"name": "AskReddit", "comments": True}]
+    get_videos()

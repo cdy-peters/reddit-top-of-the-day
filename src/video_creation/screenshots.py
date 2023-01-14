@@ -2,6 +2,7 @@
 
 import os
 import json
+
 from playwright.sync_api import sync_playwright, ViewportSize
 from dotenv import load_dotenv
 

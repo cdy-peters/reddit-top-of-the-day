@@ -1,12 +1,13 @@
 """Gets a thread and it's contents from a subreddit"""
 
 import os
+
 from datetime import datetime
 from praw.models import MoreComments
 from numerize import numerize
 
-from utils.log_videos import video_exists
-from utils.sanitize_text import clean_text
+from src.utils.log_videos import video_exists
+from src.utils.sanitize_text import clean_text
 
 
 def get_comments(thread):

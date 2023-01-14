@@ -2,10 +2,11 @@
 
 import os
 import shutil
+
 from moviepy.editor import AudioFileClip, CompositeAudioClip, concatenate_audioclips
 
-from utils.sanitize_text import check_text, split_text
-from utils.voices import streamlabs
+from src.utils.sanitize_text import check_text, split_text
+from src.utils.voices import streamlabs
 
 
 class TTS:
@@ -14,13 +15,16 @@ class TTS:
     def __init__(self, subreddit, thread_id):
         self.subreddit = subreddit
         self.thread_id = thread_id
+        self.path = os.path.abspath(
+            f"assets/subreddits/{self.subreddit}/{self.thread_id}"
+        )
         self.length = 0
         self.last_clip_length = 0
 
     def tts_handler(self, filename, text):
         """Handles the text to speech"""
 
-        dir_path = f"assets/subreddits/{self.subreddit}/{self.thread_id}/audio"
+        dir_path = f"{self.path}/audio"
         file_path = f"{dir_path}/{filename}"
 
         text = check_text(text)
@@ -52,7 +56,7 @@ class TTS:
     def get_audio(self, thread):
         """Gets the audio of the thread"""
 
-        os.mkdir(f"assets/subreddits/{self.subreddit}/{self.thread_id}/audio")
+        os.mkdir(f"{self.path}/audio")
 
         # Title tts
         self.tts_handler("title.mp3", thread["title"])
@@ -63,7 +67,7 @@ class TTS:
 
         if self.length > 60:  # Max length of video
             # Delete thread directory
-            shutil.rmtree(f"assets/subreddits/{self.subreddit}/{self.thread_id}")
+            shutil.rmtree(f"{self.path}")
             return None
         if self.length >= 45:
             thread["comments"] = []
@@ -76,7 +80,7 @@ class TTS:
 
             if self.length >= 60:  # If new comment exceeds max length of video
                 # Delete last clip
-                path = f'assets/subreddits/{self.subreddit}/{self.thread_id}/audio/{comment["id"]}.mp3'
+                path = f'{self.path}/audio/{comment["id"]}.mp3'
                 os.remove(path)
 
                 # Remove length of last clip from total length

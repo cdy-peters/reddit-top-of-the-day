@@ -3,6 +3,9 @@ import json
 import shutil
 import time
 import math
+import subprocess
+
+from multiprocessing.pool import ThreadPool
 from flask import (
     Flask,
     render_template,
@@ -15,6 +18,8 @@ from flask import (
 from src.utils.log_videos import move_video
 
 app = Flask(__name__)
+
+pool = ThreadPool(processes=1)
 
 
 def get_created_since(created_at):
@@ -133,7 +138,7 @@ def queue_remake(subreddit, thread):
     if request.method == "POST":
         req_data = request.get_json()
 
-        # Update thread.json
+        # Get thread.json
         with open(
             f"../assets/subreddits/{subreddit}/{thread}/thread.json",
             "r",
@@ -152,6 +157,7 @@ def queue_remake(subreddit, thread):
                     if old_comment["id"] == comment:
                         old_comment["body"] = req_data["comments"][comment]
 
+        # Save thread.json
         with open(
             f"../assets/subreddits/{subreddit}/{thread}/thread.json",
             "w",
@@ -159,8 +165,19 @@ def queue_remake(subreddit, thread):
         ) as f:
             json.dump(data, f, indent=4)
 
+        # Remove audio files
+        shutil.rmtree(f"../assets/subreddits/{subreddit}/{thread}/audio")
+
         # Update videos.json
         move_video(subreddit, thread, "pending_review", "pending_remake")
+
+        # Queue remake as a subprocess
+        pool.apply_async(
+            subprocess.Popen(
+                ["python", "video_creation/remake_video.py", json.dumps(data)],
+                cwd="../../src/",
+            )
+        )
 
         return jsonify({"success": True})
 
