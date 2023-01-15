@@ -22,6 +22,15 @@ app = Flask(__name__)
 pool = ThreadPool(processes=1)
 
 
+def worker(thread):
+    """Worker function for ThreadPool"""
+
+    subprocess.Popen(
+        ["python", "video_creation/remake_video.py", json.dumps(thread)],
+        cwd="../../src/",
+    ).wait()
+
+
 def get_created_since(created_at):
     """Returns how long ago the video was created"""
 
@@ -172,12 +181,7 @@ def queue_remake(subreddit, thread):
         move_video(subreddit, thread, "pending_review", "pending_remake")
 
         # Queue remake as a subprocess
-        pool.apply_async(
-            subprocess.Popen(
-                ["python", "video_creation/remake_video.py", json.dumps(data)],
-                cwd="../../src/",
-            )
-        )
+        pool.apply_async(worker, (data,))
 
         return jsonify({"success": True})
 
