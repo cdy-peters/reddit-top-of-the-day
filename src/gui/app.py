@@ -26,7 +26,7 @@ def worker(thread):
     """Worker function for ThreadPool"""
 
     subprocess.Popen(
-        ["python", "video_creation/remake_video.py", json.dumps(thread)],
+        ["python", "video_creation/video.py", json.dumps(thread)],
         cwd="../../src/",
     ).wait()
 

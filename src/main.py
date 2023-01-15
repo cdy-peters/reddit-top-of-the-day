@@ -6,7 +6,7 @@ import praw
 from dotenv import load_dotenv
 
 from video_creation.thread import get_thread
-from video_creation.get_video import get_video
+from video_creation.video import get_video
 
 from utils.log_videos import log_videos
 
